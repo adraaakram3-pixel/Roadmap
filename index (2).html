@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Task Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F5F7FA;
+    --panel: #FFFFFF;
+    --ink: #1B2430;
+    --sub: #6B7684;
+    --line: #E4E8EE;
+    --accent: #0D9488;
+    --accent-ink: #0F766E;
+    --indigo: #4F46E5;
+    --danger: #DC2626;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:1400px;
+    margin:0 auto;
+    padding:32px 28px 80px;
+  }
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .title-block h1{
+    font-size:22px;
+    font-weight:700;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .title-block p{
+    margin:0;
+    font-size:13px;
+    color:var(--sub);
+  }
+  .save-indicator{
+    font-size:12px;
+    color:var(--sub);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono',monospace;
+    opacity:0;
+    transition:opacity .4s ease;
+  }
+  .save-indicator.show{opacity:1;}
+  .save-indicator .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--accent);
+  }
+  .toolbar{
+    display:flex;
+    gap:10px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  button.btn{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    padding:9px 14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:border-color .15s ease, transform .1s ease;
+  }
+  button.btn:hover{border-color:var(--accent);}
+  button.btn:active{transform:scale(0.97);}
+  button.btn.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  button.btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);}
+
+  .table-shell{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:auto;
+    box-shadow:0 1px 2px rgba(20,30,45,0.04);
+  }
+  table{
+    border-collapse:collapse;
+    width:100%;
+    min-width:1000px;
+  }
+  thead th{
+    position:sticky;
+    top:0;
+    background:#F0F3F7;
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--sub);
+    font-weight:600;
+    padding:12px 14px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+    z-index:2;
+  }
+  thead th.col-order{width:70px;}
+  thead th.col-comment{min-width:220px;}
+  th .col-head{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  th .remove-col{
+    cursor:pointer;
+    color:#B0B8C4;
+    font-weight:700;
+    font-size:13px;
+    line-height:1;
+  }
+  th .remove-col:hover{color:var(--danger);}
+
+  tbody tr{
+    border-bottom:1px solid var(--line);
+  }
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:#FAFBFD;}
+  td{
+    padding:8px 10px;
+    vertical-align:top;
+    font-size:13.5px;
+  }
+  td.order-cell{
+    white-space:nowrap;
+    padding-left:14px;
+  }
+  .order-btns{
+    display:inline-flex;
+    gap:2px;
+  }
+  .icon-btn{
+    width:24px;height:24px;
+    border:none;
+    background:transparent;
+    border-radius:6px;
+    color:var(--sub);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+  }
+  .icon-btn:hover{background:#EEF1F5;color:var(--ink);}
+  .icon-btn.delete:hover{background:#FCE9E9;color:var(--danger);}
+  .icon-btn:disabled{opacity:.25;cursor:default;}
+  .icon-btn:disabled:hover{background:transparent;color:var(--sub);}
+
+  input[type="text"].cell-input, textarea.cell-input{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    font-family:inherit;
+    font-size:13.5px;
+    color:var(--ink);
+    padding:6px 7px;
+    border-radius:6px;
+    resize:none;
+  }
+  textarea.cell-input{min-height:36px;}
+  input[type="text"].cell-input:hover, textarea.cell-input:hover{border-color:var(--line);}
+  input[type="text"].cell-input:focus, textarea.cell-input:focus{
+    outline:none;
+    border-color:var(--accent);
+    background:#fff;
+  }
+  input.task-name{font-weight:600;min-width:180px;}
+
+  .date-field{min-width:150px;}
+  input[type="date"].cell-input{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    padding:6px 7px;
+    border-radius:6px;
+    color:var(--ink);
+  }
+  input[type="date"].cell-input:hover{border-color:var(--line);}
+  input[type="date"].cell-input:focus{outline:none;border-color:var(--accent);background:#fff;}
+  .date-history{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:#A8B0BC;
+    margin-top:3px;
+    padding-left:7px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .date-history .old{text-decoration:line-through;}
+  .date-history .note{
+    color:var(--sub);
+    font-style:italic;
+    font-family:'Inter',sans-serif;
+  }
+
+  select.cell-select{
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    border:none;
+    border-radius:20px;
+    padding:6px 10px;
+    cursor:pointer;
+    appearance:none;
+    -webkit-appearance:none;
+    min-width:118px;
+  }
+  select.cell-select:focus{outline:2px solid rgba(13,148,136,0.4);}
+
+  /* status colors */
+  .st-not-started{background:#EEF0F3;color:#5B6472;}
+  .st-in-progress{background:#DFF0FF;color:#1D5FA8;}
+  .st-blocked{background:#FCE4E4;color:#B12525;}
+  .st-done{background:#DFF5E7;color:#1E8A4C;}
+
+  /* stage colors */
+  .sg-br{background:#EFE7FE;color:#6D3FCB;}
+  .sg-uiux{background:#FCE4F3;color:#B02D80;}
+  .sg-dev{background:#DFEBFF;color:#2255B0;}
+  .sg-uat{background:#FFF1D6;color:#9A6A00;}
+  .sg-prod{background:#DFF5E7;color:#1E8A4C;}
+
+  tfoot td{
+    padding:12px 14px;
+    border-top:1px solid var(--line);
+  }
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--sub);
+    font-size:13.5px;
+  }
+  ::-webkit-scrollbar{height:10px;width:10px;}
+  ::-webkit-scrollbar-thumb{background:#D6DBE2;border-radius:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title-block">
+      <h1>Task Tracker</h1>
+      <p>Track delivery dates, status and stage across BR → UI/UX → DEV → UAT → PROD.</p>
+    </div>
+    <div class="save-indicator" id="saveIndicator"><span class="dot"></span><span>Saved</span></div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn primary" id="addRowBtn">+ Add task</button>
+    <button class="btn" id="addColBtn">+ Add column</button>
+  </div>
+
+  <div class="table-shell">
+    <table id="table">
+      <thead>
+        <tr id="headRow"></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const STATUS_OPTIONS = [
+  {v:'not-started', label:'Not started', cls:'st-not-started'},
+  {v:'in-progress', label:'In progress', cls:'st-in-progress'},
+  {v:'blocked', label:'Blocked', cls:'st-blocked'},
+  {v:'done', label:'Done', cls:'st-done'},
+];
+const STAGE_OPTIONS = [
+  {v:'BR', label:'BR', cls:'sg-br'},
+  {v:'UIUX', label:'UI/UX', cls:'sg-uiux'},
+  {v:'DEV', label:'DEV', cls:'sg-dev'},
+  {v:'UAT', label:'UAT', cls:'sg-uat'},
+  {v:'PROD', label:'PROD', cls:'sg-prod'},
+];
+
+const STORAGE_KEY = 'task-tracker:data';
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+function defaultData(){
+  return {
+    customColumns: [],
+    rows: [
+      newRow('Kick-off requirements review', 'BR', 'not-started'),
+      newRow('Homepage redesign mockups', 'UIUX', 'in-progress'),
+      newRow('API integration', 'DEV', 'not-started'),
+    ]
+  };
+}
+
+function newRow(task, stage, status){
+  return {
+    id: uid('row'),
+    task: task || '',
+    delivery: '',
+    deliveryHistory: null, // { old: 'YYYY-MM-DD' }
+    status: status || 'not-started',
+    stage: stage || 'BR',
+    comment: '',
+    custom: {}
+  };
+}
+
+let data = defaultData();
+let saveTimer = null;
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.rows)){
+        data = parsed;
+        if(!Array.isArray(data.customColumns)) data.customColumns = [];
+      }
+    }
+  }catch(e){
+    // no saved data yet, keep defaults
+  }
+  render();
+}
+
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveData, 350);
+}
+
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    flashSaved();
+  }catch(e){
+    console.error('Save failed', e);
+  }
+}
+
+function flashSaved(){
+  const el = document.getElementById('saveIndicator');
+  el.classList.add('show');
+  clearTimeout(flashSaved._t);
+  flashSaved._t = setTimeout(()=> el.classList.remove('show'), 1400);
+}
+
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+}
+
+function render(){
+  renderHead();
+  renderBody();
+}
+
+function renderHead(){
+  const headRow = document.getElementById('headRow');
+  let html = `
+    <th class="col-order">Order</th>
+    <th>Task name</th>
+    <th class="date-field">Delivery date</th>
+    <th>Status</th>
+    <th>Stage</th>
+    <th class="col-comment">Comment</th>
+  `;
+  data.customColumns.forEach(col => {
+    html += `<th data-col-id="${col.id}">
+      <div class="col-head">
+        <span>${escapeHtml(col.label)}</span>
+        <span class="remove-col" data-remove-col="${col.id}" title="Remove column">&times;</span>
+      </div>
+    </th>`;
+  });
+  html += `<th style="width:36px;"></th>`;
+  headRow.innerHTML = html;
+
+  headRow.querySelectorAll('[data-remove-col]').forEach(el => {
+    el.addEventListener('click', () => {
+      const colId = el.getAttribute('data-remove-col');
+      if(confirm('Remove this column? This will delete its values for all tasks.')){
+        data.customColumns = data.customColumns.filter(c => c.id !== colId);
+        data.rows.forEach(r => { delete r.custom[colId]; });
+        render();
+        scheduleSave();
+      }
+    });
+  });
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[s]));
+}
+
+function renderBody(){
+  const tbody = document.getElementById('tbody');
+  if(data.rows.length === 0){
+    tbody.innerHTML = `<tr><td colspan="20"><div class="empty-state">No tasks yet — add one to get started.</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = '';
+  data.rows.forEach((row, idx) => {
+    const tr = document.createElement('tr');
+    tr.dataset.rowId = row.id;
+
+    // order cell
+    const orderTd = document.createElement('td');
+    orderTd.className = 'order-cell';
+    orderTd.innerHTML = `
+      <span style="font-family:'IBM Plex Mono',monospace;color:var(--sub);font-size:12px;margin-right:6px;">${idx+1}</span>
+      <span class="order-btns">
+        <button class="icon-btn" data-action="up" ${idx===0?'disabled':''} title="Move up">&uarr;</button>
+        <button class="icon-btn" data-action="down" ${idx===data.rows.length-1?'disabled':''} title="Move down">&darr;</button>
+      </span>
+    `;
+    tr.appendChild(orderTd);
+
+    // task name
+    const taskTd = document.createElement('td');
+    taskTd.innerHTML = `<input type="text" class="cell-input task-name" data-field="task" value="${escapeHtml(row.task)}" placeholder="Task name">`;
+    tr.appendChild(taskTd);
+
+    // delivery date
+    const dateTd = document.createElement('td');
+    dateTd.className = 'date-field';
+    let historyHtml = '';
+    if(row.deliveryHistory && row.deliveryHistory.old){
+      historyHtml = `<div class="date-history">
+        <span class="old">${fmtDate(row.deliveryHistory.old)}</span>
+        <span class="note">was the old date</span>
+      </div>`;
+    }
+    dateTd.innerHTML = `<input type="date" class="cell-input" data-field="delivery" value="${row.delivery || ''}">${historyHtml}`;
+    tr.appendChild(dateTd);
+
+    // status
+    const statusTd = document.createElement('td');
+    statusTd.innerHTML = buildSelect('status', row.status, STATUS_OPTIONS);
+    tr.appendChild(statusTd);
+
+    // stage
+    const stageTd = document.createElement('td');
+    stageTd.innerHTML = buildSelect('stage', row.stage, STAGE_OPTIONS);
+    tr.appendChild(stageTd);
+
+    // comment
+    const commentTd = document.createElement('td');
+    commentTd.innerHTML = `<textarea class="cell-input" data-field="comment" placeholder="Add a note...">${escapeHtml(row.comment)}</textarea>`;
+    tr.appendChild(commentTd);
+
+    // custom columns
+    data.customColumns.forEach(col => {
+      const td = document.createElement('td');
+      const val = row.custom[col.id] || '';
+      td.innerHTML = `<input type="text" class="cell-input" data-custom-col="${col.id}" value="${escapeHtml(val)}">`;
+      tr.appendChild(td);
+    });
+
+    // delete row
+    const delTd = document.createElement('td');
+    delTd.innerHTML = `<button class="icon-btn delete" data-action="delete" title="Delete task">&#10005;</button>`;
+    tr.appendChild(delTd);
+
+    tbody.appendChild(tr);
+  });
+
+  attachRowEvents();
+}
+
+function buildSelect(field, current, options){
+  const currentOpt = options.find(o => o.v === current) || options[0];
+  let html = `<select class="cell-select ${currentOpt.cls}" data-field="${field}">`;
+  options.forEach(o => {
+    html += `<option value="${o.v}" ${o.v===current?'selected':''}>${o.label}</option>`;
+  });
+  html += `</select>`;
+  return html;
+}
+
+function attachRowEvents(){
+  const tbody = document.getElementById('tbody');
+
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const rowId = tr.dataset.rowId;
+    const row = data.rows.find(r => r.id === rowId);
+    if(!row) return;
+
+    // text/textarea/date inputs with data-field
+    tr.querySelectorAll('[data-field]').forEach(input => {
+      const field = input.getAttribute('data-field');
+
+      if(field === 'delivery'){
+        input.addEventListener('change', () => {
+          const oldVal = row.delivery;
+          const newVal = input.value;
+          if(oldVal && oldVal !== newVal){
+            row.deliveryHistory = { old: oldVal };
+          }
+          row.delivery = newVal;
+          scheduleSave();
+          renderBody();
+        });
+        return;
+      }
+
+      if(input.tagName === 'SELECT'){
+        input.addEventListener('change', () => {
+          row[field] = input.value;
+          scheduleSave();
+          renderBody();
+        });
+      } else {
+        input.addEventListener('input', () => {
+          row[field] = input.value;
+          scheduleSave();
+        });
+      }
+    });
+
+    // custom column inputs
+    tr.querySelectorAll('[data-custom-col]').forEach(input => {
+      const colId = input.getAttribute('data-custom-col');
+      input.addEventListener('input', () => {
+        row.custom[colId] = input.value;
+        scheduleSave();
+      });
+    });
+
+    // row actions
+    tr.querySelectorAll('[data-action]').forEach(btn => {
+      const action = btn.getAttribute('data-action');
+      btn.addEventListener('click', () => {
+        const idx = data.rows.findIndex(r => r.id === rowId);
+        if(action === 'up' && idx > 0){
+          [data.rows[idx-1], data.rows[idx]] = [data.rows[idx], data.rows[idx-1]];
+        } else if(action === 'down' && idx < data.rows.length - 1){
+          [data.rows[idx+1], data.rows[idx]] = [data.rows[idx], data.rows[idx+1]];
+        } else if(action === 'delete'){
+          if(confirm('Delete this task?')){
+            data.rows.splice(idx, 1);
+          }
+        }
+        render();
+        scheduleSave();
+      });
+    });
+  });
+}
+
+document.getElementById('addRowBtn').addEventListener('click', () => {
+  data.rows.push(newRow('', 'BR', 'not-started'));
+  render();
+  scheduleSave();
+  const inputs = document.querySelectorAll('.task-name');
+  if(inputs.length) inputs[inputs.length-1].focus();
+});
+
+document.getElementById('addColBtn').addEventListener('click', () => {
+  const label = prompt('New column name (e.g. Owner, Priority):');
+  if(label && label.trim()){
+    const col = { id: uid('col'), label: label.trim() };
+    data.customColumns.push(col);
+    data.rows.forEach(r => { r.custom[col.id] = ''; });
+    render();
+    scheduleSave();
+  }
+});
+
+loadData();
+</script>
+</body>
+</html>

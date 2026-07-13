@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sprint Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F3F5F8;
+    --panel: #FFFFFF;
+    --ink: #171E2B;
+    --sub: #6B7684;
+    --faint: #9AA3B0;
+    --line: #E7EAEF;
+    --line-soft: #F0F2F5;
+    --accent: #4F46E5;
+    --accent-soft: #EEF0FE;
+    --danger: #DC2626;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:1440px;
+    margin:0 auto;
+    padding:28px 28px 90px;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand-mark{
+    width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,#4F46E5,#7C6BF7);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:14px;
+    flex-shrink:0;
+  }
+  .brand h1{
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:-.01em;
+  }
+  .save-indicator{
+    font-size:11.5px;
+    color:var(--sub);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono',monospace;
+    opacity:0;
+    transition:opacity .4s ease;
+  }
+  .save-indicator.show{opacity:1;}
+  .save-indicator .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+  /* ---------- project tabs ---------- */
+  .tabbar{
+    display:flex;
+    align-items:flex-end;
+    gap:4px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .tab{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 18px;
+    border-radius:10px 10px 0 0;
+    cursor:pointer;
+    color:var(--sub);
+    font-weight:600;
+    font-size:14px;
+    border:1px solid transparent;
+    border-bottom:none;
+    background:transparent;
+    transition:background .15s ease,color .15s ease;
+  }
+  .tab:hover{background:#EBEEF3;color:var(--ink);}
+  .tab.active{
+    background:var(--panel);
+    color:var(--ink);
+    border-color:var(--line);
+  }
+  .tab .dot-chip{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .tab .tab-name{
+    outline:none;
+    min-width:16px;
+    white-space:nowrap;
+  }
+  .tab .remove-tab{
+    color:var(--faint);
+    font-weight:700;
+    font-size:13px;
+    line-height:1;
+    padding:2px;
+    border-radius:4px;
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  .tab:hover .remove-tab{opacity:1;}
+  .tab .remove-tab:hover{color:var(--danger);background:#FCE9E9;}
+  .add-tab{
+    padding:11px 14px;
+    color:var(--faint);
+    font-weight:700;
+    cursor:pointer;
+    font-size:15px;
+    border-radius:8px;
+  }
+  .add-tab:hover{color:var(--accent);background:#EBEEF3;}
+
+  /* ---------- project toolbar ---------- */
+  .project-toolbar{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  button.btn{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    padding:9px 15px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:border-color .15s ease, transform .1s ease, background .15s ease;
+  }
+  button.btn:hover{border-color:var(--accent);color:var(--accent);}
+  button.btn:active{transform:scale(0.97);}
+  button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  button.btn.primary:hover{background:#4038C7;border-color:#4038C7;color:#fff;}
+
+  /* ---------- sprint card ---------- */
+  .sprint{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    margin-bottom:18px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(20,30,45,0.03);
+  }
+  .sprint-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    background:#FAFBFC;
+    border-bottom:1px solid var(--line);
+  }
+  .collapse-toggle{
+    width:22px;height:22px;
+    border:none;background:transparent;
+    color:var(--sub);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;
+    border-radius:6px;
+    flex-shrink:0;
+    transition:transform .15s ease;
+  }
+  .collapse-toggle:hover{background:var(--line-soft);}
+  .collapse-toggle.collapsed{transform:rotate(-90deg);}
+  .sprint-name{
+    font-weight:700;
+    font-size:14.5px;
+    outline:none;
+    padding:3px 6px;
+    border-radius:6px;
+    min-width:20px;
+  }
+  .sprint-name:hover{background:var(--line-soft);}
+  .sprint-name:focus{background:#fff;box-shadow:0 0 0 2px var(--accent-soft);}
+  .task-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--sub);
+    background:var(--line-soft);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .sprint-header-actions{
+    margin-left:auto;
+    display:flex;
+    gap:6px;
+    align-items:center;
+  }
+  .icon-btn{
+    width:28px;height:28px;
+    border:none;
+    background:transparent;
+    border-radius:7px;
+    color:var(--sub);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+  }
+  .icon-btn:hover{background:#EEF1F5;color:var(--ink);}
+  .icon-btn.delete:hover{background:#FCE9E9;color:var(--danger);}
+  .icon-btn:disabled{opacity:.25;cursor:default;}
+  .icon-btn:disabled:hover{background:transparent;color:var(--sub);}
+
+  /* ---------- table ---------- */
+  .table-scroll{overflow:auto;}
+  table{border-collapse:collapse;width:100%;min-width:1020px;}
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--sub);
+    font-weight:600;
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  thead th.col-order{width:64px;}
+  thead th.col-comment{min-width:200px;}
+  th .col-head{display:flex;align-items:center;gap:6px;}
+  th .col-label{
+    outline:none;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    border-radius:4px;
+    padding:2px 3px;
+  }
+  th .col-label:hover{background:var(--line-soft);}
+  th .col-label:focus{background:#fff;color:var(--ink);box-shadow:0 0 0 2px var(--accent-soft);}
+  th .remove-col{cursor:pointer;color:#C3CAD3;font-weight:700;font-size:13px;line-height:1;}
+  th .remove-col:hover{color:var(--danger);}
+
+  tbody tr{border-bottom:1px solid var(--line-soft);}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:#FAFBFD;}
+  td{padding:7px 8px;vertical-align:top;font-size:13.5px;}
+  td.order-cell{white-space:nowrap;padding-left:12px;}
+  .order-btns{display:inline-flex;gap:1px;}
+
+  input[type="text"].cell-input, textarea.cell-input{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    font-family:inherit;
+    font-size:13.5px;
+    color:var(--ink);
+    padding:6px 7px;
+    border-radius:7px;
+    resize:none;
+  }
+  textarea.cell-input{min-height:34px;}
+  input[type="text"].cell-input:hover, textarea.cell-input:hover{border-color:var(--line);}
+  input[type="text"].cell-input:focus, textarea.cell-input:focus{
+    outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  input.task-name{font-weight:600;min-width:190px;}
+
+  .date-field{min-width:165px;}
+  input[type="date"].cell-input{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;width:100%;
+    border:1px solid transparent;background:transparent;
+    padding:6px 7px;border-radius:7px;color:var(--ink);
+  }
+  input[type="date"].cell-input:hover{border-color:var(--line);}
+  input[type="date"].cell-input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft);}
+  .date-history{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    margin-top:3px;
+    padding-left:7px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .date-history .old{text-decoration:line-through;color:#B7BEC8;}
+  .date-history .note{
+    font-family:'Inter',sans-serif;
+    font-style:normal;
+    font-size:11.5px;
+    color:var(--sub);
+    outline:none;
+    border-radius:4px;
+    padding:1px 4px;
+    min-width:10px;
+  }
+  .date-history .note:hover{background:var(--line-soft);}
+  .date-history .note:focus{background:#fff;box-shadow:0 0 0 2px var(--accent-soft);color:var(--ink);}
+
+  select.cell-select{
+    font-family:inherit;font-size:12.5px;font-weight:600;
+    border:none;border-radius:20px;padding:6px 10px;cursor:pointer;
+    appearance:none;-webkit-appearance:none;min-width:112px;
+  }
+  select.cell-select:focus{outline:2px solid rgba(79,70,229,0.3);}
+
+  .st-not-started{background:#EEF0F3;color:#5B6472;}
+  .st-in-progress{background:#DFEBFF;color:#1D5FA8;}
+  .st-blocked{background:#FCE4E4;color:#B12525;}
+  .st-done{background:#DFF5E7;color:#1E8A4C;}
+
+  .sg-br{background:#EFE7FE;color:#6D3FCB;}
+  .sg-uiux{background:#FCE4F3;color:#B02D80;}
+  .sg-dev{background:#DFEBFF;color:#2255B0;}
+  .sg-uat{background:#FFF1D6;color:#9A6A00;}
+  .sg-prod{background:#DFF5E7;color:#1E8A4C;}
+
+  .empty-sprint{padding:26px 20px;text-align:center;color:var(--faint);font-size:13px;}
+  .empty-tasks-row td{padding:20px;text-align:center;color:var(--faint);font-size:13px;}
+
+  ::-webkit-scrollbar{height:9px;width:9px;}
+  ::-webkit-scrollbar-thumb{background:#D6DBE2;border-radius:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @media (max-width:700px){
+    .wrap{padding:18px 14px 70px;}
+    .brand h1{font-size:14px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">S</div>
+      <h1>Sprint Tracker</h1>
+    </div>
+    <div class="save-indicator" id="saveIndicator"><span class="dot"></span><span>Saved</span></div>
+  </div>
+
+  <div class="tabbar" id="tabbar"></div>
+
+  <div class="project-toolbar">
+    <button class="btn primary" id="addSprintBtn">+ Add sprint</button>
+    <button class="btn" id="addColBtn">+ Add column</button>
+  </div>
+
+  <div id="sprintsContainer"></div>
+</div>
+
+<script>
+const STATUS_OPTIONS = [
+  {v:'not-started', label:'Not started', cls:'st-not-started'},
+  {v:'in-progress', label:'In progress', cls:'st-in-progress'},
+  {v:'blocked', label:'Blocked', cls:'st-blocked'},
+  {v:'done', label:'Done', cls:'st-done'},
+];
+const STAGE_OPTIONS = [
+  {v:'BR', label:'BR', cls:'sg-br'},
+  {v:'UIUX', label:'UI/UX', cls:'sg-uiux'},
+  {v:'DEV', label:'DEV', cls:'sg-dev'},
+  {v:'UAT', label:'UAT', cls:'sg-uat'},
+  {v:'PROD', label:'PROD', cls:'sg-prod'},
+];
+const PROJECT_COLORS = ['#4F46E5','#0D9488','#B02D80','#C2410C','#2255B0','#7C3AED'];
+const STORAGE_KEY = 'sprint-tracker:data:v2';
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+function newRow(){
+  return {
+    id: uid('row'), task:'', delivery:'', deliveryHistory:null,
+    status:'not-started', stage:'BR', comment:'', custom:{}
+  };
+}
+function newSprint(name){
+  return { id: uid('sprint'), name: name || 'New sprint', collapsed:false, rows:[] };
+}
+function newProject(name, colorIdx){
+  return { id: uid('proj'), name: name || 'New project', color: PROJECT_COLORS[colorIdx % PROJECT_COLORS.length], sprints:[ newSprint('Sprint 1') ] };
+}
+
+function defaultData(){
+  const zainmart = newProject('Zainmart', 0);
+  const oodi = newProject('Oodi', 1);
+  return {
+    labels: { task:'Task name', delivery:'Delivery date', status:'Status', stage:'Stage', comment:'Comment' },
+    customColumns: [],
+    activeProjectId: zainmart.id,
+    projects: [zainmart, oodi]
+  };
+}
+
+let data = defaultData();
+let saveTimer = null;
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.projects) && parsed.projects.length){
+        data = parsed;
+        if(!Array.isArray(data.customColumns)) data.customColumns = [];
+        if(!data.labels) data.labels = defaultData().labels;
+      }
+    }
+  }catch(e){}
+  render();
+}
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 350); }
+function saveData(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); flashSaved(); }
+  catch(e){ console.error('Save failed', e); }
+}
+function flashSaved(){
+  const el = document.getElementById('saveIndicator');
+  el.classList.add('show');
+  clearTimeout(flashSaved._t);
+  flashSaved._t = setTimeout(()=> el.classList.remove('show'), 1300);
+}
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+function getActiveProject(){
+  return data.projects.find(p => p.id === data.activeProjectId) || data.projects[0];
+}
+function findSprintInActive(sprintId){
+  const proj = getActiveProject();
+  return proj.sprints.find(s => s.id === sprintId);
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  renderTabs();
+  renderSprints();
+}
+
+function renderTabs(){
+  const bar = document.getElementById('tabbar');
+  bar.innerHTML = '';
+  data.projects.forEach(proj => {
+    const tab = document.createElement('div');
+    tab.className = 'tab' + (proj.id === data.activeProjectId ? ' active' : '');
+    tab.innerHTML = `
+      <span class="dot-chip" style="background:${proj.color}"></span>
+      <span class="tab-name" contenteditable="true" spellcheck="false" data-proj-id="${proj.id}">${escapeHtml(proj.name)}</span>
+      <span class="remove-tab" data-remove-proj="${proj.id}" title="Delete project">&times;</span>
+    `;
+    tab.addEventListener('click', (e) => {
+      if(e.target.closest('[data-remove-proj]') || e.target.closest('.tab-name')) return;
+      data.activeProjectId = proj.id;
+      render();
+    });
+    const nameEl = tab.querySelector('.tab-name');
+    nameEl.addEventListener('click', (e) => { data.activeProjectId = proj.id; render(); nameEl.focus(); });
+    nameEl.addEventListener('keydown', (e) => { if(e.key==='Enter'){ e.preventDefault(); nameEl.blur(); } });
+    nameEl.addEventListener('blur', () => {
+      proj.name = nameEl.textContent.trim() || 'Untitled project';
+      scheduleSave();
+    });
+    tab.querySelector('[data-remove-proj]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(data.projects.length <= 1){ alert("You need at least one project."); return; }
+      if(confirm(`Delete project "${proj.name}" and all its sprints/tasks?`)){
+        data.projects = data.projects.filter(p => p.id !== proj.id);
+        if(data.activeProjectId === proj.id){ data.activeProjectId = data.projects[0].id; }
+        render(); scheduleSave();
+      }
+    });
+    bar.appendChild(tab);
+  });
+  const addTab = document.createElement('div');
+  addTab.className = 'add-tab';
+  addTab.textContent = '+';
+  addTab.title = 'Add project';
+  addTab.addEventListener('click', () => {
+    const proj = newProject('New project', data.projects.length);
+    data.projects.push(proj);
+    data.activeProjectId = proj.id;
+    render(); scheduleSave();
+    const el = document.querySelector(`.tab-name[data-proj-id="${proj.id}"]`);
+    if(el){ el.focus(); document.execCommand('selectAll', false, null); }
+  });
+  bar.appendChild(addTab);
+}
+
+function renderSprints(){
+  const container = document.getElementById('sprintsContainer');
+  const proj = getActiveProject();
+  container.innerHTML = '';
+
+  if(proj.sprints.length === 0){
+    container.innerHTML = `<div class="sprint"><div class="empty-sprint">No sprints yet in "${escapeHtml(proj.name)}" — add one above.</div></div>`;
+    return;
+  }
+
+  proj.sprints.forEach(sprint => {
+    const card = document.createElement('div');
+    card.className = 'sprint';
+
+    const header = document.createElement('div');
+    header.className = 'sprint-header';
+    header.innerHTML = `
+      <button class="collapse-toggle ${sprint.collapsed?'collapsed':''}" data-toggle="${sprint.id}" title="Collapse/expand">&#9660;</button>
+      <span class="sprint-name" contenteditable="true" spellcheck="false" data-sprint-name="${sprint.id}">${escapeHtml(sprint.name)}</span>
+      <span class="task-count">${sprint.rows.length} task${sprint.rows.length===1?'':'s'}</span>
+      <div class="sprint-header-actions">
+        <button class="icon-btn" data-add-task="${sprint.id}" title="Add task">+ Task</button>
+        <button class="icon-btn delete" data-delete-sprint="${sprint.id}" title="Delete sprint">&#128465;</button>
+      </div>
+    `;
+    card.appendChild(header);
+
+    if(!sprint.collapsed){
+      const scroll = document.createElement('div');
+      scroll.className = 'table-scroll';
+      const table = document.createElement('table');
+      table.innerHTML = `<thead><tr id="head-${sprint.id}"></tr></thead><tbody id="body-${sprint.id}"></tbody>`;
+      scroll.appendChild(table);
+      card.appendChild(scroll);
+    }
+
+    container.appendChild(card);
+
+    if(!sprint.collapsed){
+      renderHead(sprint);
+      renderBody(sprint);
+    }
+  });
+
+  attachSprintHeaderEvents();
+}
+
+function renderHead(sprint){
+  const headRow = document.getElementById(`head-${sprint.id}`);
+  if(!headRow) return;
+  let html = `
+    <th class="col-order">Order</th>
+    <th><span class="col-label" contenteditable="true" spellcheck="false" data-label="task">${escapeHtml(data.labels.task)}</span></th>
+    <th class="date-field"><span class="col-label" contenteditable="true" spellcheck="false" data-label="delivery">${escapeHtml(data.labels.delivery)}</span></th>
+    <th><span class="col-label" contenteditable="true" spellcheck="false" data-label="status">${escapeHtml(data.labels.status)}</span></th>
+    <th><span class="col-label" contenteditable="true" spellcheck="false" data-label="stage">${escapeHtml(data.labels.stage)}</span></th>
+    <th class="col-comment"><span class="col-label" contenteditable="true" spellcheck="false" data-label="comment">${escapeHtml(data.labels.comment)}</span></th>
+  `;
+  data.customColumns.forEach(col => {
+    html += `<th data-col-id="${col.id}">
+      <div class="col-head">
+        <span class="col-label" contenteditable="true" spellcheck="false" data-custom-label="${col.id}">${escapeHtml(col.label)}</span>
+        <span class="remove-col" data-remove-col="${col.id}" title="Remove column">&times;</span>
+      </div>
+    </th>`;
+  });
+  html += `<th style="width:32px;"></th>`;
+  headRow.innerHTML = html;
+
+  headRow.querySelectorAll('[data-label]').forEach(el => {
+    el.addEventListener('keydown', (e) => { if(e.key==='Enter'){ e.preventDefault(); el.blur(); } });
+    el.addEventListener('blur', () => {
+      const key = el.getAttribute('data-label');
+      data.labels[key] = el.textContent.trim() || data.labels[key];
+      scheduleSave();
+      render();
+    });
+  });
+  headRow.querySelectorAll('[data-custom-label]').forEach(el => {
+    el.addEventListener('keydown', (e) => { if(e.key==='Enter'){ e.preventDefault(); el.blur(); } });
+    el.addEventListener('blur', () => {
+      const colId = el.getAttribute('data-custom-label');
+      const col = data.customColumns.find(c => c.id === colId);
+      if(col){ col.label = el.textContent.trim() || col.label; scheduleSave(); render(); }
+    });
+  });
+  headRow.querySelectorAll('[data-remove-col]').forEach(el => {
+    el.addEventListener('click', () => {
+      const colId = el.getAttribute('data-remove-col');
+      if(confirm('Remove this column? This deletes its values for every task in every project.')){
+        data.customColumns = data.customColumns.filter(c => c.id !== colId);
+        data.projects.forEach(p => p.sprints.forEach(s => s.rows.forEach(r => { delete r.custom[colId]; })));
+        render(); scheduleSave();
+      }
+    });
+  });
+}
+
+function buildSelect(field, current, options){
+  const currentOpt = options.find(o => o.v === current) || options[0];
+  let html = `<select class="cell-select ${currentOpt.cls}" data-field="${field}">`;
+  options.forEach(o => { html += `<option value="${o.v}" ${o.v===current?'selected':''}>${o.label}</option>`; });
+  html += `</select>`;
+  return html;
+}
+
+function renderBody(sprint){
+  const tbody = document.getElementById(`body-${sprint.id}`);
+  if(!tbody) return;
+
+  if(sprint.rows.length === 0){
+    const colspan = 7 + data.customColumns.length;
+    tbody.innerHTML = `<tr class="empty-tasks-row"><td colspan="${colspan}">No tasks in this sprint yet — click "+ Task" above.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = '';
+  sprint.rows.forEach((row, idx) => {
+    const tr = document.createElement('tr');
+    tr.dataset.rowId = row.id;
+
+    const orderTd = document.createElement('td');
+    orderTd.className = 'order-cell';
+    orderTd.innerHTML = `
+      <span style="font-family:'IBM Plex Mono',monospace;color:var(--sub);font-size:12px;margin-right:6px;">${idx+1}</span>
+      <span class="order-btns">
+        <button class="icon-btn" data-action="up" ${idx===0?'disabled':''} title="Move up">&uarr;</button>
+        <button class="icon-btn" data-action="down" ${idx===sprint.rows.length-1?'disabled':''} title="Move down">&darr;</button>
+      </span>
+    `;
+    tr.appendChild(orderTd);
+
+    const taskTd = document.createElement('td');
+    taskTd.innerHTML = `<input type="text" class="cell-input task-name" data-field="task" value="${escapeHtml(row.task)}">`;
+    tr.appendChild(taskTd);
+
+    const dateTd = document.createElement('td');
+    dateTd.className = 'date-field';
+    let historyHtml = '';
+    if(row.deliveryHistory){
+      historyHtml = `<div class="date-history">
+        <span class="old">${fmtDate(row.deliveryHistory.old)}</span>
+        <span class="note" contenteditable="true" spellcheck="false" data-note-for="${row.id}">${escapeHtml(row.deliveryHistory.note || '')}</span>
+      </div>`;
+    }
+    dateTd.innerHTML = `<input type="date" class="cell-input" data-field="delivery" value="${row.delivery || ''}">${historyHtml}`;
+    tr.appendChild(dateTd);
+
+    const statusTd = document.createElement('td');
+    statusTd.innerHTML = buildSelect('status', row.status, STATUS_OPTIONS);
+    tr.appendChild(statusTd);
+
+    const stageTd = document.createElement('td');
+    stageTd.innerHTML = buildSelect('stage', row.stage, STAGE_OPTIONS);
+    tr.appendChild(stageTd);
+
+    const commentTd = document.createElement('td');
+    commentTd.innerHTML = `<textarea class="cell-input" data-field="comment">${escapeHtml(row.comment)}</textarea>`;
+    tr.appendChild(commentTd);
+
+    data.customColumns.forEach(col => {
+      const td = document.createElement('td');
+      const val = row.custom[col.id] || '';
+      td.innerHTML = `<input type="text" class="cell-input" data-custom-col="${col.id}" value="${escapeHtml(val)}">`;
+      tr.appendChild(td);
+    });
+
+    const delTd = document.createElement('td');
+    delTd.innerHTML = `<button class="icon-btn delete" data-action="delete" title="Delete task">&#10005;</button>`;
+    tr.appendChild(delTd);
+
+    tbody.appendChild(tr);
+  });
+
+  attachRowEvents(sprint, tbody);
+}
+
+function attachRowEvents(sprint, tbody){
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const rowId = tr.dataset.rowId;
+    const row = sprint.rows.find(r => r.id === rowId);
+    if(!row) return;
+
+    tr.querySelectorAll('[data-field]').forEach(input => {
+      const field = input.getAttribute('data-field');
+      if(field === 'delivery'){
+        input.addEventListener('change', () => {
+          const oldVal = row.delivery;
+          const newVal = input.value;
+          if(oldVal && oldVal !== newVal){
+            row.deliveryHistory = { old: oldVal, note: '' };
+          }
+          row.delivery = newVal;
+          scheduleSave();
+          renderBody(sprint);
+        });
+        return;
+      }
+      if(input.tagName === 'SELECT'){
+        input.addEventListener('change', () => { row[field] = input.value; scheduleSave(); renderBody(sprint); });
+      } else {
+        input.addEventListener('input', () => { row[field] = input.value; scheduleSave(); });
+      }
+    });
+
+    tr.querySelectorAll('[data-note-for]').forEach(el => {
+      el.addEventListener('input', () => {
+        if(row.deliveryHistory){ row.deliveryHistory.note = el.textContent; scheduleSave(); }
+      });
+    });
+
+    tr.querySelectorAll('[data-custom-col]').forEach(input => {
+      const colId = input.getAttribute('data-custom-col');
+      input.addEventListener('input', () => { row.custom[colId] = input.value; scheduleSave(); });
+    });
+
+    tr.querySelectorAll('[data-action]').forEach(btn => {
+      const action = btn.getAttribute('data-action');
+      btn.addEventListener('click', () => {
+        const idx = sprint.rows.findIndex(r => r.id === rowId);
+        if(action === 'up' && idx > 0){
+          [sprint.rows[idx-1], sprint.rows[idx]] = [sprint.rows[idx], sprint.rows[idx-1]];
+        } else if(action === 'down' && idx < sprint.rows.length - 1){
+          [sprint.rows[idx+1], sprint.rows[idx]] = [sprint.rows[idx], sprint.rows[idx+1]];
+        } else if(action === 'delete'){
+          if(confirm('Delete this task?')) sprint.rows.splice(idx, 1);
+        }
+        renderSprints();
+        scheduleSave();
+      });
+    });
+  });
+}
+
+function attachSprintHeaderEvents(){
+  document.querySelectorAll('[data-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sprint = findSprintInActive(btn.getAttribute('data-toggle'));
+      if(sprint){ sprint.collapsed = !sprint.collapsed; renderSprints(); scheduleSave(); }
+    });
+  });
+  document.querySelectorAll('[data-sprint-name]').forEach(el => {
+    el.addEventListener('keydown', (e) => { if(e.key==='Enter'){ e.preventDefault(); el.blur(); } });
+    el.addEventListener('blur', () => {
+      const sprint = findSprintInActive(el.getAttribute('data-sprint-name'));
+      if(sprint){ sprint.name = el.textContent.trim() || 'Untitled sprint'; scheduleSave(); }
+    });
+  });
+  document.querySelectorAll('[data-add-task]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sprint = findSprintInActive(btn.getAttribute('data-add-task'));
+      if(sprint){
+        sprint.rows.push(newRow());
+        renderSprints(); scheduleSave();
+        const inputs = document.querySelectorAll(`#body-${sprint.id} .task-name`);
+        if(inputs.length) inputs[inputs.length-1].focus();
+      }
+    });
+  });
+  document.querySelectorAll('[data-delete-sprint]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const proj = getActiveProject();
+      const sprintId = btn.getAttribute('data-delete-sprint');
+      const sprint = proj.sprints.find(s => s.id === sprintId);
+      if(sprint && confirm(`Delete sprint "${sprint.name}" and all its tasks?`)){
+        proj.sprints = proj.sprints.filter(s => s.id !== sprintId);
+        renderSprints(); scheduleSave();
+      }
+    });
+  });
+}
+
+document.getElementById('addSprintBtn').addEventListener('click', () => {
+  const proj = getActiveProject();
+  const sprint = newSprint(`Sprint ${proj.sprints.length + 1}`);
+  proj.sprints.push(sprint);
+  renderSprints(); scheduleSave();
+});
+
+document.getElementById('addColBtn').addEventListener('click', () => {
+  const label = prompt('New column name (e.g. Owner, Priority):');
+  if(label && label.trim()){
+    const col = { id: uid('col'), label: label.trim() };
+    data.customColumns.push(col);
+    data.projects.forEach(p => p.sprints.forEach(s => s.rows.forEach(r => { r.custom[col.id] = ''; })));
+    renderSprints(); scheduleSave();
+  }
+});
+
+loadData();
+</script>
+</body>
+</html>

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Oodi PM Roadmap Dashboard</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a202c;font-size:13px}
+.hdr{background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.hdr-left h1{font-size:22px;font-weight:700;letter-spacing:.5px}.hdr-left p{font-size:12px;opacity:.8;margin-top:3px}
+.hdr-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.week-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600}
+.btn{cursor:pointer;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;transition:.2s}
+.btn-white{background:#fff;color:#1e3a5f}.btn-white:hover{background:#e0eaff}
+.btn-green{background:#22c55e;color:#fff}.btn-green:hover{background:#16a34a}
+.btn-export{background:#f59e0b;color:#fff}.btn-export:hover{background:#d97706}
+.summary{display:flex;gap:12px;padding:16px 28px;flex-wrap:wrap}
+.card{background:#fff;border-radius:10px;padding:14px 20px;flex:1;min-width:130px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-top:3px solid #3b82f6}
+.card.c1{border-color:#3b82f6}.card.c2{border-color:#8b5cf6}.card.c3{border-color:#f59e0b}.card.c4{border-color:#22c55e}.card.c5{border-color:#ef4444}.card.c6{border-color:#14b8a6}
+.card-num{font-size:28px;font-weight:800;color:#1e3a5f}.card-lbl{font-size:11px;color:#64748b;margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.toolbar{padding:10px 28px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border-bottom:1px solid #e2e8f0}
+.toolbar input,.toolbar select{border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px;background:#f8fafc}
+.toolbar input:focus,.toolbar select:focus{outline:none;border-color:#3b82f6}
+.toolbar label{font-size:12px;color:#64748b;font-weight:600}
+.sep{width:1px;height:24px;background:#e2e8f0;margin:0 4px}
+.tbl-wrap{padding:0 28px 28px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08);min-width:1800px}
+thead tr{background:#1e3a5f;color:#fff}
+th{padding:10px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{background:#2d4f7a} th .sort-icon{margin-left:4px;opacity:.6;font-size:10px}
+tbody tr{border-bottom:1px solid #f1f5f9;transition:.15s}tbody tr:hover{background:#f8fafc}
+tbody tr.closed-row{opacity:.6}
+td{padding:8px 10px;vertical-align:middle;font-size:12px}
+.stage-select{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600;cursor:pointer}
+.stage-BR{background:#dbeafe;color:#1d4ed8}.stage-Design{background:#ede9fe;color:#6d28d9}
+.stage-Dev{background:#fef3c7;color:#92400e}.stage-UAT{background:#d1fae5;color:#065f46}
+.stage-Prod{background:#f0fdf4;color:#14532d;border:1px solid #22c55e}.stage-Blocked{background:#fee2e2;color:#991b1b}
+.md-select{width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600;cursor:pointer}
+.md-yes{background:#d1fae5;color:#065f46}.md-no{background:#fee2e2;color:#991b1b}.md-pending{background:#fef3c7;color:#92400e}.md-na{background:#f1f5f9;color:#64748b}
+.pri{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.pri-crit{background:#fee2e2;color:#991b1b}.pri-high{background:#fef3c7;color:#92400e}.pri-med{background:#dbeafe;color:#1d4ed8}.pri-low{background:#f0fdf4;color:#166534}.pri-enh{background:#f5f3ff;color:#6d28d9}
+.date-cell{display:flex;flex-direction:column;gap:3px;min-width:140px}
+.date-orig{font-size:11px;color:#1e3a5f;font-weight:600}.date-orig.struck{text-decoration:line-through;color:#ef4444;text-decoration-thickness:2px}
+.date-revised{font-size:11px;color:#22c55e;font-weight:600}.date-reason{font-size:10px;color:#64748b;font-style:italic}
+.status-steps{display:flex;gap:2px;align-items:center;min-width:220px}
+.step{width:32px;height:18px;border-radius:3px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;text-transform:uppercase}
+.step-done{background:#22c55e;color:#fff}.step-active{background:#3b82f6;color:#fff;box-shadow:0 0 0 2px #bfdbfe}.step-todo{background:#f1f5f9;color:#94a3b8}.step-block{background:#ef4444;color:#fff}
+.act-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:.15s}.act-btn:hover{background:#f1f5f9}
+.del-btn{color:#ef4444}.del-btn:hover{background:#fee2e2}
+.hl-green{background:#f0fdf4!important}.hl-yellow{background:#fffbeb!important}.hl-red{background:#fff5f5!important}.hl-blue{background:#eff6ff!important}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:28px;width:580px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h3{font-size:17px;color:#1e3a5f;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#64748b}.modal-close:hover{color:#1e3a5f}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.form-row.full{grid-template-columns:1fr}
+.form-grp label{display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.form-grp input,.form-grp select,.form-grp textarea{width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:7px 10px;font-size:12px;background:#f8fafc}
+.form-grp textarea{min-height:70px;resize:vertical}
+.form-grp input:focus,.form-grp select:focus,.form-grp textarea:focus{outline:none;border-color:#3b82f6;background:#fff}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+#col-manager-panel{position:fixed;top:56px;right:20px;width:280px;max-height:calc(100vh - 80px);overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:2000;padding:14px 16px;font-size:13px}
+.col-mgr-header{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;color:#1e3a5f;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.col-mgr-close{background:none;border:none;font-size:16px;cursor:pointer;color:#94a3b8;line-height:1}.col-mgr-close:hover{color:#ef4444}
+.col-mgr-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;margin-bottom:6px}
+.col-mgr-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12px;color:#1e293b;transition:.12s;user-select:none}
+.col-mgr-row:hover{background:#f8fafc}.col-mgr-required{color:#64748b}
+.col-mgr-row input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:#3b82f6;flex-shrink:0}
+.col-mgr-row input[type=checkbox]:disabled{opacity:.5;cursor:not-allowed}
+.col-mgr-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.dot-vis{background:#22c55e}.dot-hid{background:#e2e8f0}
+.col-mgr-lock{font-size:10px;margin-left:auto}
+.col-mgr-del{margin-left:auto;background:none;border:none;cursor:pointer;color:#ef4444;font-size:12px;padding:1px 4px;border-radius:4px;line-height:1}.col-mgr-del:hover{background:#fee2e2}
+.col-mgr-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:1px solid #f1f5f9}
+.col-mgr-btn{border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.col-mgr-btn-show{background:#eff6ff;color:#2563eb}.col-mgr-btn-show:hover{background:#dbeafe}
+.col-mgr-btn-done{background:#1e3a5f;color:#fff}.col-mgr-btn-done:hover{background:#2d4f7a}
+.editable{border:1px solid transparent;border-radius:4px;padding:3px 6px;min-height:26px;width:100%;font-size:11px;background:transparent;cursor:text;transition:.15s}
+.editable:hover{border-color:#cbd5e1;background:#f8fafc}.editable:focus{border-color:#3b82f6;background:#fff;outline:none}
+@media print{.toolbar,.hdr-right button,.act-btn,.modal-bg{display:none!important}.tbl-wrap{padding:0}.hdr{background:#1e3a5f!important;-webkit-print-color-adjust:exact}}</style><style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left"><h1>🚀 Oodi Mobile App — PM Roadmap Dashboard</h1><p>Product Management · Mobile app · Next - After Launch · Week of 07 Jun 2026</p></div>
+  <div class="hdr-right">
+    <span class="week-badge">📅 Week of 07 Jun 2026</span>
+    <button class="btn btn-white" onclick="window.addRow()">➕ Add Ticket</button>
+    <button class="btn btn-white" onclick="window.addCustomColumn()">＋ Column</button>
+    <button class="btn btn-white" onclick="window.openColManager()" style="background:#ede9fe;color:#6d28d9">🗂 Columns</button>
+    <button class="btn btn-green" onclick="window.saveState()" style="">💾 Save</button>
+    <button class="btn btn-export" onclick="window.exportHTML()">📤 Export</button>
+    <button class="btn btn-white" onclick="window.printDash()">🖨 Print</button>
+  </div>
+</div>
+<div class="summary">
+  <div class="card c1"><div class="card-num">32</div><div class="card-lbl">Total Tickets</div></div>
+  <div class="card c2"><div class="card-num">4</div><div class="card-lbl">P1 Critical</div></div>
+  <div class="card c3"><div class="card-num">0</div><div class="card-lbl">Blocked</div></div>
+  <div class="card c4"><div class="card-num">0</div><div class="card-lbl">In Prod</div></div>
+  <div class="card c5"><div class="card-num">1</div><div class="card-lbl">In UAT</div></div>
+  <div class="card c6"><div class="card-num">5</div><div class="card-lbl">Closed</div></div>
+</div>
+<div class="toolbar">
+  <label>🔍</label><input type="text" id="search-inp" placeholder="Search tickets..." oninput="window.filterRows()" style="width:200px">
+  <div class="sep"></div>
+  <label>Stage:</label><select id="filter-stage" onchange="window.filterRows()"><option value="">All</option><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select>
+  <label>Priority:</label><select id="filter-pri" onchange="window.filterRows()"><option value="">All</option><option>P1 - Critical</option><option>P2 - High</option><option>P3 - Medium</option><option>P4 - Low</option><option>Enhancement</option></select>
+  <label>MD:</label><select id="filter-md" onchange="window.filterRows()"><option value="">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="N/A">N/A</option></select>
+  <label>Assignee:</label><select id="filter-assignee" onchange="window.filterRows()"><option value="">All</option><option value="Ahmad Raza">Ahmad Raza</option><option value="Ahmed Alokbi">Ahmed Alokbi</option><option value="Athraa Akram">Athraa Akram</option><option value="Bogdan Pelin">Bogdan Pelin</option><option value="Emilia Sanda">Emilia Sanda</option><option value="Fethi Hamdani">Fethi Hamdani</option><option value="Hatem Bouziane">Hatem Bouziane</option><option value="Mohammad Anini">Mohammad Anini</option><option value="Saad Ahmed">Saad Ahmed</option><option value="Salman Ahmad">Salman Ahmad</option><option value="Saloua Sahnoune">Saloua Sahnoune</option></select>
+  <div class="sep"></div>
+  <label>Highlight:</label><select id="filter-hl" onchange="window.filterRows()"><option value="">All</option><option value="green">🟢 On Track</option><option value="yellow">🟡 At Risk</option><option value="red">🔴 Critical</option><option value="blue">🔵 Info</option></select>
+  <div class="sep"></div>
+  <button class="btn btn-white" onclick="window.clearFilters()" style="padding:5px 12px;font-size:12px">✕ Clear</button>
+</div>
+<div class="tbl-wrap"><table id="main-table"><thead><tr><th onclick="window.sortTable('id')">#<span class="sort-icon">⇅</span></th><th onclick="window.sortTable('subject')">Ticket Subject<span class="sort-icon">⇅</span></th><th onclick="window.sortTable('priority')">Priority<span class="sort-icon">⇅</span></th><th onclick="window.sortTable('assignee')">Assignee<span class="sort-icon">⇅</span></th><th onclick="window.sortTable('stage')">Stage<span class="sort-icon">⇅</span></th><th>Progress Steps</th><th>Est. Date / Revised</th><th>Effort (Days)</th><th>Tracker Status</th><th>Highlight / RAG</th><th>Blockers</th><th>Comment / PM Notes</th><th>Actions</th></tr></thead><tbody id="tbl-body"><tr class=" " data-id="6513" id="row-6513">
+      <td><a href="https://tracker.oodi.iq/issues/6513" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#6513</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">World Cup_Requirement</div></td>
+      <td><span class="pri pri-high">P2 - High</span></td>
+      <td style="white-space:nowrap;font-size:11px">Athraa Akram</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(6513,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(6513)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(6513)" title="Delete">🗑</button></td>
+    </tr><tr class=" hl-yellow" data-id="6452" id="row-6452">
+      <td><a href="https://tracker.oodi.iq/issues/6452" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#6452</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">28 Days — Plan Validity Update</div><span style="font-size:10px;color:#6d28d9;background:#ede9fe;padding:1px 6px;border-radius:8px;margin-top:2px;display:inline-block">Sprint 14</span></td>
+      <td><span class="pri pri-crit">P1 - Critical</span></td>
+      <td style="white-space:nowrap;font-size:11px">Emilia Sanda</td>
+      <td><select class="stage-select stage-Dev" onchange="window.updateField(6452,'stage',this.value)" style="min-width:110px"><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev" selected="">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-done">BR</span><span class="step step-done">DSN</span><span class="step step-active">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig struck">2026-06-15</span><span class="date-revised">↪ 2026-06-25</span><span class="date-reason">Backend API dependencies delayed</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">10d</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">🟡</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">⚠ API gateway config pending from infra team</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">BE team confirmed new timeline. Risk flag raised to MD on 06/05.</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(6452)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(6452)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="6080" id="row-6080">
+      <td><a href="https://tracker.oodi.iq/issues/6080" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#6080</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Roaming Show country name instead of zone</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(6080,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(6080)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(6080)" title="Delete">🗑</button></td>
+    </tr><tr class="closed-row " data-id="6077" id="row-6077">
+      <td><a href="https://tracker.oodi.iq/issues/6077" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#6077</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">iOS issue make your oodi number as login popup issue</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Salman Ahmad</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(6077,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Closed</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(6077)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(6077)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5933" id="row-5933">
+      <td><a href="https://tracker.oodi.iq/issues/5933" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5933</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Error messages for Friends &amp; Family</div></td>
+      <td><span class="pri pri-low">P4 - Low</span></td>
+      <td style="white-space:nowrap;font-size:11px">Emilia Sanda</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5933,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5933)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5933)" title="Delete">🗑</button></td>
+    </tr><tr class=" hl-green" data-id="5923" id="row-5923">
+      <td><a href="https://tracker.oodi.iq/issues/5923" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5923</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Revamp phase II (BE) — Discovery Phase</div><span style="font-size:10px;color:#6d28d9;background:#ede9fe;padding:1px 6px;border-radius:8px;margin-top:2px;display:inline-block">Sprint 15</span></td>
+      <td><span class="pri pri-high">P2 - High</span></td>
+      <td style="white-space:nowrap;font-size:11px">Mohammad Anini</td>
+      <td><select class="stage-select stage-Design" onchange="window.updateField(5923,'stage',this.value)" style="min-width:110px"><option value="Business Req">Business Req</option><option value="Design" selected="">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-done">BR</span><span class="step step-active">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">2026-07-01</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">21d</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">🟢</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">Discovery phase underway, design sprint starts next week.</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5923)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5923)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5873" id="row-5873">
+      <td><a href="https://tracker.oodi.iq/issues/5873" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5873</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">iOS app showing internet issue</div></td>
+      <td><span class="pri pri-low">P4 - Low</span></td>
+      <td style="white-space:nowrap;font-size:11px">Fethi Hamdani</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5873,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5873)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5873)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5845" id="row-5845">
+      <td><a href="https://tracker.oodi.iq/issues/5845" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5845</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Display of roaming offers in the new oodi app</div></td>
+      <td><span class="pri pri-low">P4 - Low</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5845,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5845)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5845)" title="Delete">🗑</button></td>
+    </tr><tr class=" hl-yellow" data-id="5792" id="row-5792">
+      <td><a href="https://tracker.oodi.iq/issues/5792" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5792</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">20-day plans</div><span style="font-size:10px;color:#6d28d9;background:#ede9fe;padding:1px 6px;border-radius:8px;margin-top:2px;display:inline-block">Sprint 14</span></td>
+      <td><span class="pri pri-high">P2 - High</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmed Alokbi</td>
+      <td><select class="stage-select stage-Dev" onchange="window.updateField(5792,'stage',this.value)" style="min-width:110px"><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev" selected="">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-done">BR</span><span class="step step-done">DSN</span><span class="step step-active">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig struck">2026-06-20</span><span class="date-revised">↪ 2026-07-05</span><span class="date-reason">Pricing model changes required additional BE work</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">12d</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">🟡</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">Date revised due to pricing model complexity. Stakeholders informed.</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5792)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5792)" title="Delete">🗑</button></td>
+    </tr><tr class="closed-row " data-id="5786" id="row-5786">
+      <td><a href="https://tracker.oodi.iq/issues/5786" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5786</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">1001 Partnership</div></td>
+      <td><span class="pri pri-high">P2 - High</span></td>
+      <td style="white-space:nowrap;font-size:11px">Bogdan Pelin</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5786,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Closed</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5786)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5786)" title="Delete">🗑</button></td>
+    </tr><tr class=" hl-red" data-id="5784" id="row-5784">
+      <td><a href="https://tracker.oodi.iq/issues/5784" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5784</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Loyalty Program</div></td>
+      <td><span class="pri pri-high">P2 - High</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5784,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">2026-08-01</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">30d</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">🔴</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">⚠ Waiting for MD approval and business sign-off</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">High strategic priority. BRD in draft, awaiting stakeholder review.</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5784)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5784)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5658" id="row-5658">
+      <td><a href="https://tracker.oodi.iq/issues/5658" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5658</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">WAF randomly shows up on different screens</div></td>
+      <td><span class="pri pri-high">P2 - High</span></td>
+      <td style="white-space:nowrap;font-size:11px">Bogdan Pelin</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5658,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5658)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5658)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5634" id="row-5634">
+      <td><a href="https://tracker.oodi.iq/issues/5634" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5634</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">[BUG] Set password flow</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Bogdan Pelin</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5634,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5634)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5634)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5563" id="row-5563">
+      <td><a href="https://tracker.oodi.iq/issues/5563" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5563</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Test automation</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Salman Ahmad</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5563,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5563)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5563)" title="Delete">🗑</button></td>
+    </tr><tr class="closed-row " data-id="5562" id="row-5562">
+      <td><a href="https://tracker.oodi.iq/issues/5562" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5562</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Order tracking automatically went to Order accepted</div></td>
+      <td><span class="pri pri-low">P4 - Low</span></td>
+      <td style="white-space:nowrap;font-size:11px">Bogdan Pelin</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5562,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Closed</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5562)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5562)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5561" id="row-5561">
+      <td><a href="https://tracker.oodi.iq/issues/5561" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5561</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">UI / UX Enhancement Quick Wins &amp; Design system</div></td>
+      <td><span class="pri pri-low">—</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5561,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5561)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5561)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5555" id="row-5555">
+      <td><a href="https://tracker.oodi.iq/issues/5555" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5555</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Production Readiness Review</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5555,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5555)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5555)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5554" id="row-5554">
+      <td><a href="https://tracker.oodi.iq/issues/5554" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5554</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - UX Edge-Case Review</div></td>
+      <td><span class="pri pri-enh">Enhancement</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5554,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5554)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5554)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5553" id="row-5553">
+      <td><a href="https://tracker.oodi.iq/issues/5553" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5553</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - API Reliability Review</div></td>
+      <td><span class="pri pri-enh">Enhancement</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5553,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5553)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5553)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5552" id="row-5552">
+      <td><a href="https://tracker.oodi.iq/issues/5552" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5552</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Security Review</div></td>
+      <td><span class="pri pri-enh">Enhancement</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5552,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5552)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5552)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5551" id="row-5551">
+      <td><a href="https://tracker.oodi.iq/issues/5551" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5551</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Error Handling and Resilience Review</div></td>
+      <td><span class="pri pri-enh">Enhancement</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5551,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5551)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5551)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5550" id="row-5550">
+      <td><a href="https://tracker.oodi.iq/issues/5550" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5550</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Redundancy and Code Quality Review</div></td>
+      <td><span class="pri pri-enh">Enhancement</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5550,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5550)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5550)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5549" id="row-5549">
+      <td><a href="https://tracker.oodi.iq/issues/5549" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5549</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Performance Review</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Fethi Hamdani</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5549,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5549)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5549)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5548" id="row-5548">
+      <td><a href="https://tracker.oodi.iq/issues/5548" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5548</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Refactor Alignment Prompt</div></td>
+      <td><span class="pri pri-enh">Enhancement</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5548,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5548)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5548)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5547" id="row-5547">
+      <td><a href="https://tracker.oodi.iq/issues/5547" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5547</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">AI audit feedback - Architecture Review</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Ahmad Raza</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5547,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5547)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5547)" title="Delete">🗑</button></td>
+    </tr><tr class="closed-row " data-id="5544" id="row-5544">
+      <td><a href="https://tracker.oodi.iq/issues/5544" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5544</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Add-ons missing description</div></td>
+      <td><span class="pri pri-low">P4 - Low</span></td>
+      <td style="white-space:nowrap;font-size:11px">Bogdan Pelin</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5544,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Closed</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5544)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5544)" title="Delete">🗑</button></td>
+    </tr><tr class="closed-row " data-id="5515" id="row-5515">
+      <td><a href="https://tracker.oodi.iq/issues/5515" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5515</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Cancel the order without specifying a reason</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Hatem Bouziane</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5515,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Resolved</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5515)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5515)" title="Delete">🗑</button></td>
+    </tr><tr class=" hl-green" data-id="5462" id="row-5462">
+      <td><a href="https://tracker.oodi.iq/issues/5462" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5462</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Robocalls APIs &amp; Conversion Reporting</div><span style="font-size:10px;color:#6d28d9;background:#ede9fe;padding:1px 6px;border-radius:8px;margin-top:2px;display:inline-block">Sprint 13</span></td>
+      <td><span class="pri pri-crit">P1 - Critical</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-Dev" onchange="window.updateField(5462,'stage',this.value)" style="min-width:110px"><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev" selected="">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-done">BR</span><span class="step step-done">DSN</span><span class="step step-active">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">2026-06-20</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">15d</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">In Progress</span></td>
+      <td style="text-align:center;font-size:16px">🟢</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">Dev 70% complete. API integration ongoing.</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5462)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5462)" title="Delete">🗑</button></td>
+    </tr><tr class=" hl-green" data-id="5461" id="row-5461">
+      <td><a href="https://tracker.oodi.iq/issues/5461" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5461</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Sprinklr Integration - App and Website SDK</div><span style="font-size:10px;color:#6d28d9;background:#ede9fe;padding:1px 6px;border-radius:8px;margin-top:2px;display:inline-block">Sprint 13</span></td>
+      <td><span class="pri pri-crit">P1 - Critical</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saad Ahmed</td>
+      <td><select class="stage-select stage-UAT" onchange="window.updateField(5461,'stage',this.value)" style="min-width:110px"><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT" selected="">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-done">BR</span><span class="step step-done">DSN</span><span class="step step-done">DEV</span><span class="step step-active">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">2026-06-10</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">14d</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">New</span></td>
+      <td style="text-align:center;font-size:16px">🟢</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">UAT in progress. Go-live target June 10. Testing on track.</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5461)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5461)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="5445" id="row-5445">
+      <td><a href="https://tracker.oodi.iq/issues/5445" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#5445</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">Password Flow Issues</div></td>
+      <td><span class="pri pri-med">P3 - Medium</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(5445,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(5445)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(5445)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="4961" id="row-4961">
+      <td><a href="https://tracker.oodi.iq/issues/4961" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#4961</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">IOS - Login Screen – Biometric Login</div></td>
+      <td><span class="pri pri-low">P4 - Low</span></td>
+      <td style="white-space:nowrap;font-size:11px">Fethi Hamdani</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(4961,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">In Progress</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(4961)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(4961)" title="Delete">🗑</button></td>
+    </tr><tr class=" " data-id="4956" id="row-4956">
+      <td><a href="https://tracker.oodi.iq/issues/4956" target="_blank" style="color:#2563eb;text-decoration:none;font-weight:700">#4956</a></td>
+      <td style="max-width:280px;min-width:200px"><div style="font-weight:600;color:#1e3a5f;font-size:12px;line-height:1.4">IOS - Copy / Copyright</div></td>
+      <td><span class="pri pri-crit">P1 - Critical</span></td>
+      <td style="white-space:nowrap;font-size:11px">Saloua Sahnoune</td>
+      <td><select class="stage-select stage-BR" onchange="window.updateField(4956,'stage',this.value)" style="min-width:110px"><option value="Business Req" selected="">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></td>
+      <td><div class="status-steps"><span class="step step-active">BR</span><span class="step step-todo">DSN</span><span class="step step-todo">DEV</span><span class="step step-todo">UAT</span><span class="step step-todo">PROD</span></div></td>
+      
+      <td style="min-width:150px"><div class="date-cell"><span class="date-orig">—</span></div></td>
+      <td style="text-align:center;font-size:12px;font-weight:600;color:#6d28d9">—</td>
+      
+      
+      <td><span style="font-size:10px;background:#f1f5f9;padding:2px 7px;border-radius:8px;color:#475569">Feedback</span></td>
+      <td style="text-align:center;font-size:16px">—</td>
+      <td style="max-width:160px;font-size:11px;color:#ef4444">—</td>
+      <td style="max-width:200px;font-size:11px;color:#475569;font-style:italic">—</td>
+      
+      <td style="white-space:nowrap"><button class="act-btn" onclick="window.openEdit(4956)" title="Edit">✏️</button><button class="act-btn del-btn" onclick="window.deleteRow(4956)" title="Delete">🗑</button></td>
+    </tr></tbody></table></div>
+<!-- Edit Modal -->
+<div class="modal-bg" id="edit-modal"><div class="modal">
+  <h3>✏️ Edit Ticket <button class="modal-close" onclick="document.getElementById('edit-modal').classList.remove('open')">✕</button></h3>
+  <input type="hidden" id="modal-id">
+  <div class="form-row full"><div class="form-grp"><label>Subject</label><input type="text" id="m-subject"></div></div>
+  <div class="form-row"><div class="form-grp"><label>Stage</label><select id="m-stage"><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></div><div class="form-grp"><label>MD Approval</label><select id="m-md"><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="N/A">N/A</option></select></div></div>
+  <div class="form-row"><div class="form-grp"><label>Estimated Date</label><input type="date" id="m-estdate"></div><div class="form-grp"><label>Priority</label><select id="m-priority"><option>P1 - Critical</option><option>P2 - High</option><option>P3 - Medium</option><option>P4 - Low</option><option>Enhancement</option></select></div></div>
+  <div class="form-row"><div class="form-grp"><label>Revised Date</label><input type="date" id="m-revised"></div><div class="form-grp"><label>Effort (Days)</label><input type="number" id="m-effort" min="0"></div></div>
+  <div class="form-row full"><div class="form-grp"><label>Revision Reason</label><input type="text" id="m-reason" placeholder="Why was the date revised?"></div></div>
+  <div class="form-row"><div class="form-grp"><label>Assignee</label><input type="text" id="m-assignee"></div><div class="form-grp"><label>Sprint</label><input type="text" id="m-sprint"></div></div>
+  <div class="form-row"><div class="form-grp"><label>Highlight / RAG</label><select id="m-highlight"><option value="">None</option><option value="green">🟢 On Track</option><option value="yellow">🟡 At Risk</option><option value="red">🔴 Critical</option><option value="blue">🔵 Info</option></select></div><div class="form-grp"><label>Category</label><input type="text" id="m-category"></div></div>
+  <div class="form-row full"><div class="form-grp"><label>Blockers</label><textarea id="m-blockers"></textarea></div></div>
+  <div class="form-row full"><div class="form-grp"><label>Comment / PM Notes</label><textarea id="m-comment"></textarea></div></div>
+  <div class="modal-btns"><button class="btn btn-white" onclick="document.getElementById('edit-modal').classList.remove('open')">Cancel</button><button class="btn btn-green" onclick="window.saveModal()">💾 Save Changes</button></div>
+</div></div>
+<!-- Add Ticket Modal -->
+<div class="modal-bg" id="add-modal"><div class="modal">
+  <h3>➕ Add New Ticket <button class="modal-close" onclick="document.getElementById('add-modal').classList.remove('open')">✕</button></h3>
+  <div class="form-row"><div class="form-grp"><label>Ticket ID</label><input type="text" id="a-id" placeholder="e.g. 6600"></div><div class="form-grp"><label>Priority</label><select id="a-priority"><option>P1 - Critical</option><option selected="">P2 - High</option><option>P3 - Medium</option><option>P4 - Low</option><option>Enhancement</option></select></div></div>
+  <div class="form-row full"><div class="form-grp"><label>Subject</label><input type="text" id="a-subject" placeholder="Ticket title/description"></div></div>
+  <div class="form-row"><div class="form-grp"><label>Assignee</label><input type="text" id="a-assignee"></div><div class="form-grp"><label>Category</label><input type="text" id="a-category"></div></div>
+  <div class="form-row"><div class="form-grp"><label>Stage</label><select id="a-stage"><option value="Business Req">Business Req</option><option value="Design">Design</option><option value="Dev">Dev</option><option value="UAT">UAT</option><option value="Prod">Prod</option><option value="Blocked">Blocked</option></select></div><div class="form-grp"><label>MD Approval</label><select id="a-md"><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="N/A">N/A</option></select></div></div>
+  <div class="form-row"><div class="form-grp"><label>Estimated Date</label><input type="date" id="a-estdate"></div><div class="form-grp"><label>Effort (Days)</label><input type="number" id="a-effort" min="0"></div></div>
+  <div class="form-row full"><div class="form-grp"><label>Comment</label><textarea id="a-comment"></textarea></div></div>
+  <div class="modal-btns"><button class="btn btn-white" onclick="document.getElementById('add-modal').classList.remove('open')">Cancel</button><button class="btn btn-green" onclick="window.saveNewRow()">➕ Add Ticket</button></div>
+</div></div>
+<!-- Add Custom Column Modal -->
+<div class="modal-bg" id="col-modal"><div class="modal" style="width:380px">
+  <h3>＋ Add Custom Column <button class="modal-close" onclick="document.getElementById('col-modal').classList.remove('open')">✕</button></h3>
+  <div class="form-grp" style="margin-bottom:16px"><label>Column Name</label><input type="text" id="col-name" placeholder="e.g. Stakeholder, Risk, Version..."></div>
+  <div class="modal-btns"><button class="btn btn-white" onclick="document.getElementById('col-modal').classList.remove('open')">Cancel</button><button class="btn btn-green" onclick="window.confirmAddCol()">Add Column</button></div>
+</div></div><div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out;"><div id="claude-agent-glow-border-inner" style="position: absolute; inset: 0px; will-change: opacity; box-shadow: rgba(217, 119, 87, 0.7) 0px 0px 15px inset, rgba(217, 119, 87, 0.5) 0px 0px 25px inset, rgba(217, 119, 87, 0.2) 0px 0px 35px inset;"></div></div><div id="claude-static-indicator-container" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; justify-content: center; padding: 6px 6px 6px 16px; background: rgb(250, 249, 245); border: 0.5px solid rgba(31, 30, 29, 0.3); border-radius: 14px; box-shadow: rgba(0, 0, 0, 0.15) 0px 40px 80px 0px; z-index: 2147483647; pointer-events: none; white-space: nowrap; user-select: none; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; flex-shrink: 0; margin-right: 8px;">
+        <path d="M3.13946 10.6399L6.28757 8.87462L6.37405 8.73821L6.28757 8.6339H6.13189L5.60432 8.6018L3.80541 8.55366L2.24865 8.48947L0.735135 8.40923H0.492973L0.354595 8.32899L0.181622 8.1685L0.0345946 8.01605L0 7.85557L0.0345946 7.62287L0.138378 7.44634L0.224865 7.40622H0.354595L0.812973 7.44634L1.82486 7.51856L3.34703 7.62287L4.44541 7.68706L6.08 7.85557H6.33946L6.37405 7.75125L6.28757 7.68706L6.21838 7.62287L4.64432 6.55567L2.94054 5.4323L2.04973 4.78235L1.57405 4.45336L1.33189 4.14845L1.22811 3.92377L1.17622 3.69107L1.22811 3.47442L1.33189 3.28185L1.46162 3.13741L1.66054 2.99298H1.87676L2.24865 3.0331L2.39568 3.07322L2.99243 3.53059L4.26378 4.51755L5.92432 5.73721L6.16649 5.93781H6.27892V5.82548L6.16649 5.64092L5.26703 4.01204L4.30703 2.35105L3.87459 1.66098L3.76216 1.25176C3.7391 1.16082 3.69297 0.977332 3.69297 0.970913V0.762287L3.77946 0.505517L3.93513 0.240722L4.18595 0.0882648L4.4627 0H4.67892L4.83459 0.0240722L5.12865 0.0882648L5.4054 0.328987L5.82054 1.27583L6.48649 2.76028L7.52432 4.78235L7.82703 5.38415L7.99135 5.93781L8.05189 6.10632H8.15567V6.01003L8.24216 4.87061L8.39784 3.47442L8.55351 1.67703L8.6054 1.17151L8.85622 0.561685L8.9773 0.417252L9.21946 0.232698H9.35784L9.74703 0.417252L9.97189 0.665998L10.067 0.874624L10.0238 1.17151L9.83351 2.40722L9.46162 4.34102L9.21946 5.64092H9.35784L9.52216 5.47242L10.1795 4.60582L11.2778 3.22568L11.7622 2.68004L12.333 2.07823L12.6962 1.78937L13.0162 1.67703L13.3881 1.78937L13.7168 2.06219L13.8897 2.54363V2.76028L13.6649 3.32197L12.9557 4.22066L12.3676 4.98295L12.0043 5.56871L11.0011 7.02106V7.08526H11.1741L13.0768 6.67603L14.1059 6.49147L15.3341 6.28285L15.5762 6.34704L15.8876 6.53962L15.9481 6.80441L15.8876 7.12538L15.7319 7.34203L14.4173 7.66299L12.8778 7.97593L10.5854 8.51559C10.5705 8.51909 10.56 8.53236 10.56 8.54764C10.56 8.56468 10.573 8.57891 10.59 8.58044L11.6238 8.67402L12.0649 8.69809H13.1459L15.1611 8.85055L15.6886 9.19559L15.9481 9.39619L16 9.62086L15.9481 9.94985L15.8443 10.1023L15.4119 10.3029L15.1351 10.3591L14.0454 10.1023L11.4941 9.49248L10.6205 9.27583H10.4995V9.34804L11.2259 10.0622L12.5665 11.2658L14.2357 12.8225L14.3222 13.0953V13.2076L14.1059 13.5125L13.9243 13.5206L13.8811 13.4804L12.4108 12.3731L12.2984 12.325L11.84 11.8756L10.56 10.7924H10.4735V10.9047L10.7676 11.338L12.333 13.6891L12.4108 14.4112L12.2984 14.6439L11.8919 14.7884L11.667 14.7563L11.4508 14.7081L11.2605 14.5396L10.5254 13.4162L9.5827 11.9719L8.82162 10.672H8.79342C8.76039 10.672 8.73278 10.6972 8.7297 10.73L8.27676 15.5667L8.06919 15.8154L7.6454 16H7.58486L7.17838 15.6951L6.96216 15.1976L7.17838 14.2106L7.43784 12.9268L7.6454 11.9077L7.83567 10.6399L7.95187 10.2164C7.9548 10.2057 7.95069 10.1944 7.94161 10.1881C7.91157 10.1672 7.87034 10.1741 7.84878 10.2037L6.89297 11.5145L5.44 13.4804L4.28973 14.7081L4.01297 14.8205H3.80541L3.5373 14.5717V14.4514L3.58054 14.1304L3.84865 13.7372L5.44 11.7151L6.4 10.4554L7.01872 9.73222C7.04511 9.70139 7.04245 9.65523 7.0127 9.62763C7.00333 9.61894 6.98925 9.61773 6.97854 9.62471L2.75027 12.3811L1.99784 12.4774L1.66919 12.1725L1.71243 11.675L1.86811 11.5145L3.13946 10.6399Z" fill="#D97757"></path>
+      </svg>
+      <span style="vertical-align: middle; color: #141413; font-size: 14px; display: inline-block;">Claude is active in this tab group</span>
+      <div style="display: inline-block; width: 0.5px; height: 32px; background: rgba(31, 30, 29, 0.15); margin: 0 8px; vertical-align: middle;"></div>
+      <button id="claude-static-chat-button" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: transparent; border: none; cursor: pointer; pointer-events: auto; vertical-align: middle; width: 32px; height: 32px; border-radius: 8px; transition: background 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="#141413" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block;">
+          <path d="M10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5H3C2.79779 17.5 2.61549 17.3782 2.53809 17.1914C2.4607 17.0046 2.50349 16.7895 2.64648 16.6465L4.35547 14.9365C3.20124 13.6175 2.5 11.8906 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5ZM10 3.5C6.41015 3.5 3.5 6.41015 3.5 10C3.5 11.7952 4.22659 13.4199 5.40332 14.5967L5.46582 14.6729C5.52017 14.7544 5.5498 14.8508 5.5498 14.9502C5.5498 15.0828 5.49709 15.2099 5.40332 15.3037L4.20703 16.5H10C13.5899 16.5 16.5 13.5899 16.5 10C16.5 6.41015 13.5899 3.5 10 3.5ZM13.29 9.30371C13.3986 9.05001 13.6925 8.93174 13.9463 9.04004C14.2 9.14863 14.3183 9.44253 14.21 9.69629C13.8506 10.536 13.1645 11.25 12.25 11.25C11.6372 11.25 11.128 10.9289 10.75 10.4648C10.372 10.9289 9.86276 11.25 9.25 11.25C8.63724 11.25 8.12801 10.9289 7.75 10.4648C7.37198 10.9289 6.86276 11.25 6.25 11.25C5.97386 11.25 5.75 11.0261 5.75 10.75C5.75 10.4739 5.97386 10.25 6.25 10.25C6.58764 10.25 7.00448 9.97056 7.29004 9.30371L7.32422 9.2373C7.41431 9.09121 7.5749 9 7.75 9C7.9501 9 8.13123 9.11975 8.20996 9.30371L8.32227 9.53516C8.59804 10.0359 8.95442 10.25 9.25 10.25C9.58764 10.25 10.0045 9.97056 10.29 9.30371L10.3242 9.2373C10.4143 9.09121 10.5749 9 10.75 9C10.9501 9 11.1312 9.11975 11.21 9.30371L11.3223 9.53516C11.598 10.0359 11.9544 10.25 12.25 10.25C12.5876 10.25 13.0045 9.97056 13.29 9.30371Z"></path>
+        </svg>
+        <span id="claude-static-chat-tooltip" style="position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); padding: 6px 12px; background: #30302E; color: #FAF9F5; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">Open chat</span>
+      </button>
+      <button id="claude-static-close-button" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: transparent; border: none; cursor: pointer; pointer-events: auto; vertical-align: middle; width: 32px; height: 32px; margin-left: 4px; border-radius: 8px; transition: background 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block;">
+          <path d="M15.1464 4.14642C15.3417 3.95121 15.6582 3.95118 15.8534 4.14642C16.0486 4.34168 16.0486 4.65822 15.8534 4.85346L10.7069 9.99997L15.8534 15.1465C16.0486 15.3417 16.0486 15.6583 15.8534 15.8535C15.6826 16.0244 15.4186 16.0461 15.2245 15.918L15.1464 15.8535L9.99989 10.707L4.85338 15.8535C4.65813 16.0486 4.34155 16.0486 4.14634 15.8535C3.95115 15.6583 3.95129 15.3418 4.14634 15.1465L9.29286 9.99997L4.14634 4.85346C3.95129 4.65818 3.95115 4.34162 4.14634 4.14642C4.34154 3.95128 4.65812 3.95138 4.85338 4.14642L9.99989 9.29294L15.1464 4.14642Z" fill="#141413"></path>
+        </svg>
+        <span id="claude-static-close-tooltip" style="position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); padding: 6px 12px; background: #30302E; color: #FAF9F5; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">Dismiss</span>
+      </button>
+    </div>
+</body>
+</html>

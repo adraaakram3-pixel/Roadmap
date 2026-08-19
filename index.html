@@ -686,7 +686,16 @@ function renderTabs(){
       data.activeProjectId = proj.id; render();
     });
     const nameEl = tab.querySelector('.tab-name');
-    nameEl.addEventListener('click', () => { data.activeProjectId = proj.id; render(); nameEl.focus(); });
+nameEl.addEventListener('click', () => {
+  if(data.activeProjectId !== proj.id){
+    data.activeProjectId = proj.id;
+    render();
+    const freshEl = document.querySelector(`.tab-name[data-proj-id="${proj.id}"]`);
+    if(freshEl){ freshEl.focus(); document.execCommand('selectAll', false, null); }
+  } else {
+    nameEl.focus();
+  }
+});
     nameEl.addEventListener('keydown', (e) => { if(e.key==='Enter'){ e.preventDefault(); nameEl.blur(); } });
     nameEl.addEventListener('blur', () => { proj.name = nameEl.textContent.trim() || 'Untitled project'; scheduleSave(); render(); });
     tab.querySelector('[data-remove-proj]').addEventListener('click', (e) => {

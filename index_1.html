@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5F9; --panel:#FFFFFF; --ink:#0F172A; --ink-2:#334155; --sub:#64748B; --faint:#94A3B8;
+    --line:#E2E8F0; --line-soft:#F1F5F9; --accent:#2563EB; --accent-soft:#DBEAFE;
+    --navy:#0B1F44; --navy-2:#173A7A; --danger:#DC2626;
+    --radius:14px; --shadow:0 1px 2px rgba(15,23,42,.04),0 6px 18px rgba(15,23,42,.05);
+    --nav-h:58px; --gutter:32px;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;font-size:13px;}
+  button,select,input,textarea{font-family:inherit;}
+  .wrap{padding-bottom:90px;}
+
+  /* ---------- app bar ---------- */
+  .appbar{
+    background:radial-gradient(900px 260px at 88% -40%,rgba(56,189,248,.28),transparent 60%),linear-gradient(120deg,var(--navy),var(--navy-2));
+    color:#fff;padding:22px var(--gutter);
+  }
+  .appbar-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px;min-width:0;}
+  .brand-icon{width:48px;height:48px;border-radius:13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;font-size:24px;outline:none;flex-shrink:0;cursor:text;}
+  .brand-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:3px;}
+  .brand h1{font-size:22px;font-weight:800;letter-spacing:-.015em;margin:0;outline:none;border-radius:6px;padding:0 4px;margin-left:-4px;}
+  .brand p{margin:3px 0 0;font-size:12.5px;color:rgba(255,255,255,.72);outline:none;border-radius:6px;padding:0 4px;margin-left:-4px;}
+  .brand [contenteditable]:hover{background:rgba(255,255,255,.08);}
+  .brand [contenteditable]:focus{background:rgba(255,255,255,.15);}
+  .brand h1:empty:before,.brand p:empty:before{content:attr(data-placeholder);opacity:.5;}
+  .app-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .abtn{font-size:12.5px;font-weight:600;border-radius:9px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:background .15s,transform .1s;}
+  .abtn:hover{background:rgba(255,255,255,.18);}
+  .abtn:active{transform:scale(.97);}
+  .abtn.primary{background:#fff;color:var(--navy);border-color:#fff;}
+  .abtn.primary:hover{background:#E8EEFB;}
+  .abtn.on{background:#38BDF8;border-color:#38BDF8;color:var(--navy);}
+  .abtn svg{flex-shrink:0;}
+  .sync{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(255,255,255,.75);padding:0 6px;white-space:nowrap;}
+  .sync .dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.2);}
+  .sync.saving .dot,.sync.loading .dot{background:#FBBF24;box-shadow:0 0 0 3px rgba(251,191,36,.2);animation:blink 1s infinite;}
+  .sync.error .dot{background:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.25);}
+  .sync.error{color:#FECACA;}
+  @keyframes blink{50%{opacity:.35}}
+
+  /* ---------- sticky sub-nav ---------- */
+  .subnav{position:sticky;top:0;z-index:40;height:var(--nav-h);background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 var(--gutter);}
+  .subnav.scrolled{box-shadow:0 6px 18px rgba(15,23,42,.07);}
+  .ptabs{display:flex;align-items:center;gap:4px;overflow-x:auto;min-width:0;scrollbar-width:none;}
+  .ptabs::-webkit-scrollbar{display:none;}
+  .ptab{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;cursor:pointer;color:var(--sub);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,color .15s;}
+  .ptab:hover{background:var(--line-soft);color:var(--ink);}
+  .ptab.active{background:var(--navy);color:#fff;}
+  .ptab .dot-chip{width:8px;height:8px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,.6);}
+  .ptab .tab-name{outline:none;min-width:12px;border-radius:4px;}
+  .ptab .tab-name:focus{background:rgba(255,255,255,.18);padding:0 3px;}
+  .ptab .remove-tab{opacity:0;font-size:14px;line-height:1;padding:0 2px;border-radius:4px;transition:opacity .15s;}
+  .ptab:hover .remove-tab{opacity:.7;}
+  .ptab .remove-tab:hover{opacity:1;color:#FCA5A5;}
+  .add-tab{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--faint);cursor:pointer;font-size:17px;font-weight:600;flex-shrink:0;}
+  .add-tab:hover{background:var(--line-soft);color:var(--accent);}
+  .vswitch{display:inline-flex;background:var(--line-soft);border:1px solid var(--line);border-radius:11px;padding:3px;flex-shrink:0;}
+  .vswitch button{border:0;background:transparent;color:var(--sub);font-weight:600;font-size:12.5px;padding:7px 14px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .vswitch button.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.12);}
+
+  .alertbar{margin:16px var(--gutter) 0;background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;border-radius:12px;padding:11px 14px;font-size:12.5px;display:flex;align-items:center;gap:12px;}
+  .alertbar button{margin-left:auto;border:1px solid #FCA5A5;background:#fff;color:#991B1B;border-radius:8px;padding:6px 12px;font-weight:600;cursor:pointer;}
+
+  .page{padding:22px var(--gutter) 0;}
+
+  /* ---------- KPI cards ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;}
+  .kpi{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px 14px;cursor:pointer;box-shadow:var(--shadow);overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;text-align:left;font:inherit;color:inherit;}
+  .kpi:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(15,23,42,.09);}
+  .kpi.active{border-color:var(--k);box-shadow:0 0 0 3px color-mix(in srgb,var(--k) 18%,transparent);}
+  .kpi::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:var(--k);}
+  .kpi-label{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--sub);}
+  .kpi-label .kd{width:8px;height:8px;border-radius:50%;background:var(--k);}
+  .kpi-num{font-size:30px;font-weight:800;letter-spacing:-.025em;margin-top:8px;line-height:1;font-variant-numeric:tabular-nums;}
+  .kpi-num small{font-size:13px;font-weight:600;color:var(--faint);margin-left:4px;letter-spacing:0;}
+  .kpi-sub{font-size:11.5px;color:var(--sub);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kpi-bar{height:4px;border-radius:4px;background:var(--line-soft);margin-top:12px;overflow:hidden;}
+  .kpi-bar span{display:block;height:100%;background:var(--k);border-radius:4px;transition:width .5s ease;}
+
+  /* ---------- insight cards ---------- */
+  .insights{display:grid;grid-template-columns:1.2fr 1.1fr 1fr;gap:14px;margin-top:14px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);min-width:0;}
+  .card-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .card-h h3{margin:0;font-size:14px;font-weight:700;}
+  .card-h .card-sub{font-size:11.5px;color:var(--faint);}
+  .health-bar{display:flex;height:16px;border-radius:8px;overflow:hidden;gap:2px;background:var(--line-soft);}
+  .health-seg{height:100%;cursor:pointer;transition:filter .15s,flex-grow .5s;min-width:6px;}
+  .health-seg:hover{filter:brightness(1.1);}
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:12px;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent;}
+  .legend-item:hover{background:var(--line-soft);}
+  .legend-item.active{background:var(--accent-soft);border-color:#BFDBFE;}
+  .legend-item .sw{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+  .legend-item b{margin-left:auto;font-variant-numeric:tabular-nums;}
+  .legend-item .pct{color:var(--faint);font-size:11px;width:34px;text-align:right;font-variant-numeric:tabular-nums;}
+  .reason-row{display:grid;grid-template-columns:150px 1fr 76px;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;border:1px solid transparent;}
+  .reason-row:hover{background:var(--line-soft);}
+  .reason-row.active{background:var(--accent-soft);border-color:#BFDBFE;}
+  .reason-name{display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .reason-name .sw{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .reason-track{height:8px;background:var(--line-soft);border-radius:5px;overflow:hidden;}
+  .reason-fill{height:100%;border-radius:5px;transition:width .5s ease;}
+  .reason-val{text-align:right;font-size:12px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .reason-val b{color:var(--ink);}
+  .empty-insight{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:130px;color:var(--faint);font-size:12.5px;text-align:center;}
+  .empty-insight .big{font-size:22px;color:#16A34A;}
+  .pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:end;height:150px;}
+  .pipe-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;cursor:pointer;border-radius:8px;padding:4px 2px;border:1px solid transparent;}
+  .pipe-col:hover{background:var(--line-soft);}
+  .pipe-col.active{background:var(--accent-soft);border-color:#BFDBFE;}
+  .pipe-n{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;}
+  .pipe-bar{width:100%;max-width:46px;border-radius:7px 7px 3px 3px;min-height:4px;transition:height .5s ease;}
+  .pipe-l{font-size:10.5px;font-weight:700;color:var(--sub);letter-spacing:.04em;}
+
+  /* ---------- toolbar / filters ---------- */
+  .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 14px;}
+  .search{position:relative;flex:1 1 220px;min-width:180px;}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint);}
+  .search input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:13px;color:var(--ink);}
+  .search input:focus,.fsel:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .fsel{font-size:12.5px;font-weight:500;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);padding:8px 10px;cursor:pointer;max-width:170px;}
+  .fsel.set{border-color:var(--accent);background:var(--accent-soft);color:#1D4ED8;font-weight:600;}
+  .tbtn{font-size:12.5px;font-weight:600;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink-2);padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+  .tbtn:hover{border-color:var(--accent);color:var(--accent);}
+  .tbtn.primary{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .tbtn.primary:hover{background:var(--navy-2);color:#fff;}
+  .tbtn.ghost{border-color:transparent;background:transparent;color:var(--sub);}
+  .tbtn.ghost:hover{color:var(--danger);}
+  .filter-count{font-size:11.5px;color:var(--sub);font-family:var(--mono);}
+  .tb-spacer{flex:1;}
+
+  /* ---------- sprint card ---------- */
+  .sprint{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:20px;box-shadow:var(--shadow);overflow:clip;}
+  .sprint-header{position:sticky;top:var(--nav-h);z-index:8;background:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line);}
+  .sprint-header.stuck{box-shadow:0 1px 0 var(--line);}
+  .collapse-toggle{width:26px;height:26px;border:0;background:transparent;color:var(--sub);cursor:pointer;display:grid;place-items:center;border-radius:7px;transition:transform .15s;}
+  .collapse-toggle:hover{background:var(--line-soft);}
+  .collapse-toggle.collapsed{transform:rotate(-90deg);}
+  .sprint-name{font-weight:800;font-size:15px;outline:none;padding:2px 6px;border-radius:6px;letter-spacing:-.01em;}
+  .sprint-name:hover{background:var(--line-soft);}
+  .sprint-name:focus{background:#fff;box-shadow:0 0 0 2px var(--accent-soft);}
+  .chip-count{font-family:var(--mono);font-size:11px;color:var(--sub);background:var(--line-soft);padding:3px 9px;border-radius:20px;}
+  .sprint-dates{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--sub);}
+  .sprint-health{display:inline-flex;gap:6px;flex-wrap:wrap;}
+  .mini{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--line-soft);color:var(--ink-2);}
+  .mini .sw{width:7px;height:7px;border-radius:50%;}
+  .sprint-progress{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:11.5px;color:var(--sub);white-space:nowrap;}
+  .sprint-progress .track{width:110px;height:6px;border-radius:4px;background:var(--line-soft);overflow:hidden;}
+  .sprint-progress .track span{display:block;height:100%;background:linear-gradient(90deg,#2563EB,#16A34A);border-radius:4px;}
+  .sprint-actions{display:flex;gap:4px;}
+  .icon-btn{min-width:30px;height:30px;border:0;background:transparent;border-radius:8px;color:var(--sub);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:12.5px;font-weight:600;padding:0 6px;}
+  .icon-btn:hover{background:var(--line-soft);color:var(--ink);}
+  .icon-btn.delete:hover{background:#FEE2E2;color:var(--danger);}
+  .icon-btn:disabled{opacity:.25;cursor:default;}
+  .icon-btn:disabled:hover{background:transparent;color:var(--sub);}
+
+  /* ---------- table ---------- */
+  .table-scroll{overflow-x:auto;}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:1560px;}
+  thead{position:relative;z-index:6;}
+  thead.stuck th{box-shadow:0 8px 14px -8px rgba(11,31,68,.55);}
+  thead th{background:var(--navy);color:#fff;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:12px 10px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.06);}
+  th .col-head{display:flex;align-items:center;gap:6px;}
+  th .col-label{outline:none;border-radius:4px;padding:2px 3px;}
+  th .col-label:hover{background:rgba(255,255,255,.12);}
+  th .col-label:focus{background:rgba(255,255,255,.2);}
+  th .remove-col{cursor:pointer;color:rgba(255,255,255,.5);font-size:14px;line-height:1;}
+  th .remove-col:hover{color:#FCA5A5;}
+  tbody td{padding:9px 8px;vertical-align:top;border-bottom:1px solid var(--line-soft);background:#fff;transition:background .12s;}
+  tbody tr:last-child td{border-bottom:0;}
+  tbody tr:hover td{background:#F8FAFC;}
+  tbody tr.row-hidden{display:none;}
+  tbody tr.flash td{animation:flash 1.4s ease;}
+  @keyframes flash{0%{background:#FEF9C3}100%{background:#fff}}
+  td.order-cell{white-space:nowrap;padding-left:14px;box-shadow:inset 4px 0 0 var(--hc,transparent);}
+  .ticket-no-row{display:flex;align-items:center;}
+  .ticket-hash{font-family:var(--mono);font-weight:600;color:var(--accent);font-size:12.5px;}
+  input.ticket-no-input{width:56px;border:1px solid transparent;background:transparent;font-family:var(--mono);font-weight:600;color:var(--accent);font-size:12.5px;padding:3px;border-radius:6px;}
+  .order-btns{display:inline-flex;gap:0;margin-top:2px;}
+  .order-btns .icon-btn{min-width:24px;height:24px;font-size:12px;}
+
+  input[type="text"].cell-input,textarea.cell-input,input[type="number"].cell-input{width:100%;border:1px solid transparent;background:transparent;font-size:13px;color:var(--ink);padding:6px 7px;border-radius:8px;resize:none;}
+  textarea.cell-input{min-height:34px;overflow:hidden;white-space:pre-wrap;word-break:break-word;line-height:1.45;}
+  .cell-input:hover,input.ticket-no-input:hover{border-color:var(--line) !important;}
+  .cell-input:focus,input.ticket-no-input:focus{outline:none;border-color:var(--accent) !important;background:#fff !important;box-shadow:0 0 0 3px var(--accent-soft);}
+  input.task-name{font-weight:600;min-width:220px;}
+  .assignee-field{min-width:120px;}
+  .effort-row{display:flex;align-items:center;gap:4px;}
+  .effort-row input{width:56px;text-align:right;}
+  .effort-row .unit{font-size:12px;color:var(--sub);font-family:var(--mono);}
+  .blocker-field{min-width:170px;}
+  .blocker-field textarea.has-value{color:var(--danger);font-weight:600;background:#FEF2F2;}
+  .comment-field{min-width:220px;}
+
+  select.cell-select{font-size:12px;font-weight:700;border:0;border-radius:20px;padding:6px 26px 6px 11px;cursor:pointer;appearance:none;-webkit-appearance:none;min-width:104px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 9px center;}
+  select.cell-select:focus{outline:2px solid rgba(37,99,235,.35);}
+  .pr-p1{background-color:#FEE2E2;color:#B91C1C;}
+  .pr-p2{background-color:#FEF3C7;color:#92400E;}
+  .pr-p3{background-color:#DBEAFE;color:#1D4ED8;}
+  .pr-p4{background-color:#DCFCE7;color:#15803D;}
+  .ts-new{background-color:#F1F5F9;color:#475569;}
+  .ts-inprogress{background-color:#DBEAFE;color:#1D4ED8;}
+  .ts-feedback{background-color:#F3E8FF;color:#7C3AED;}
+  .ts-blocked{background-color:#FEE2E2;color:#B91C1C;}
+  .ts-done{background-color:#DCFCE7;color:#15803D;}
+  .ts-closed{background-color:#E2E8F0;color:#475569;}
+
+  /* progress steps */
+  .progress-steps{display:flex;gap:3px;}
+  .pstep{font-family:var(--mono);display:flex;align-items:center;justify-content:center;min-width:34px;padding:6px 4px;border-radius:6px;cursor:pointer;background:#F1F5F9;color:#A0AEC0;font-size:9.5px;font-weight:600;transition:background .12s,transform .1s;}
+  .pstep:hover{background:#E2E8F0;transform:translateY(-1px);}
+  .pstep.done{background:#DCFCE7;color:#15803D;}
+  .pstep.current{background:var(--navy);color:#fff;box-shadow:0 0 0 3px #DBEAFE;}
+  .stage-meta{font-size:11px;color:var(--sub);margin-top:5px;}
+
+  /* RAG */
+  .rag-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px dashed var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:var(--faint);background:#fff;margin-top:5px;transition:transform .1s;}
+  .rag-dot:hover{transform:scale(1.12);}
+  .rag-dot.rag-green{background:#22C55E;border:2px solid #BBF7D0;}
+  .rag-dot.rag-amber{background:#F59E0B;border:2px solid #FDE68A;}
+  .rag-dot.rag-red{background:#EF4444;border:2px solid #FECACA;}
+
+  .row-actions{display:flex;align-items:center;gap:2px;white-space:nowrap;}
+  select.move-select{font-size:11.5px;border:1px solid var(--line);border-radius:8px;padding:5px;background:#fff;color:var(--sub);cursor:pointer;max-width:110px;}
+
+  /* ---------- dd/mm/yyyy date picker ---------- */
+  .dp{position:relative;display:inline-flex;align-items:center;border:1px solid transparent;border-radius:8px;transition:border-color .12s,box-shadow .12s;background:transparent;}
+  .dp:hover{border-color:var(--line);}
+  .dp:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:#fff;}
+  .dp.boxed{border-color:var(--line);background:#fff;}
+  .dp-text{width:94px;border:0;background:transparent;font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);padding:6px 2px 6px 8px;outline:none;}
+  .dp-text::placeholder{color:var(--faint);font-weight:400;}
+  .dp-btn{border:0;background:transparent;width:28px;height:28px;border-radius:6px;cursor:pointer;color:var(--sub);display:grid;place-items:center;flex-shrink:0;}
+  .dp-btn:hover{background:var(--line-soft);color:var(--accent);}
+  .dp-native{position:absolute;left:0;bottom:0;width:100%;height:1px;opacity:0;pointer-events:none;border:0;padding:0;}
+  .dp.invalid{border-color:var(--danger);animation:shake .3s;}
+  @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+  .dp.st-delayed .dp-text{color:#B91C1C;}
+  .dp.st-ahead .dp-text{color:#0E7490;}
+  .dp.st-delivered .dp-text{color:#1D4ED8;}
+
+  /* date cell + history */
+  .date-cell{min-width:200px;}
+  .hist-toggle{margin-top:5px;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border:1px solid var(--line);background:#fff;border-radius:20px;padding:3px 10px 3px 7px;cursor:pointer;color:var(--ink-2);white-space:nowrap;}
+  .hist-toggle:hover{border-color:var(--accent);}
+  .hist-toggle .chev{transition:transform .15s;}
+  .hist-toggle.open .chev{transform:rotate(90deg);}
+  .hist-toggle.late{color:#B91C1C;border-color:#FECACA;background:#FEF2F2;}
+  .hist-toggle.early{color:#0E7490;border-color:#A5F3FC;background:#ECFEFF;}
+  .plan-tag{font-size:11px;color:var(--faint);margin:3px 0 0 9px;}
+  .hist{list-style:none;margin:10px 0 2px 8px;padding:0 0 0 16px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:10px;min-width:270px;animation:fadeIn .2s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .hist-item{position:relative;font-size:12px;}
+  .hist-item::before{content:'';position:absolute;left:-22px;top:4px;width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid var(--faint);}
+  .hist-item.late::before{border-color:#DC2626;}
+  .hist-item.early::before{border-color:#0891B2;}
+  .hist-item.current::before{background:var(--navy);border-color:var(--navy);}
+  .hist-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .hist-date{font-family:var(--mono);font-weight:600;}
+  .hist-item.superseded .hist-date{text-decoration:line-through;color:var(--faint);}
+  .hist-tag{font-size:11px;color:var(--sub);font-weight:600;}
+  .hist-meta{font-size:10.5px;color:var(--faint);}
+  .shift{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;background:var(--line-soft);color:var(--sub);font-family:var(--mono);}
+  .shift.late{background:#FEE2E2;color:#B91C1C;}
+  .shift.early{background:#CFFAFE;color:#0E7490;}
+  .hist-reason{margin-top:5px;font-size:11.5px;font-weight:600;border:1px solid var(--line);border-left:4px solid var(--rc,#CBD5E1);border-radius:7px;padding:4px 6px;background:#fff;color:var(--ink-2);cursor:pointer;max-width:230px;}
+  .hist-note{margin-top:4px;width:100%;max-width:260px;font-size:11.5px;border:1px solid transparent;border-radius:6px;padding:4px 6px;background:var(--line-soft);color:var(--ink-2);}
+  .hist-note:focus{outline:none;border-color:var(--accent);background:#fff;}
+  .hist-del{border:0;background:transparent;color:var(--faint);cursor:pointer;font-size:14px;line-height:1;border-radius:4px;padding:0 4px;margin-left:auto;}
+  .hist-del:hover{color:var(--danger);background:#FEE2E2;}
+
+  /* schedule cell */
+  .sched{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:180px;}
+  .st-ontrack{background-color:#DCFCE7;color:#15803D;}
+  .st-delayed{background-color:#FEE2E2;color:#B91C1C;}
+  .st-ahead{background-color:#CFFAFE;color:#0E7490;}
+  .st-delivered{background-color:#DBEAFE;color:#1D4ED8;}
+  .st-nodate{background-color:#F1F5F9;color:#64748B;}
+  .sched-meta{font-size:11px;color:var(--sub);padding-left:4px;}
+  .sched-meta.late{color:#B91C1C;font-weight:600;}
+  .reason-select{font-size:11.5px;font-weight:600;border:1px solid var(--line);border-left:4px solid var(--rc,#CBD5E1);border-radius:7px;padding:4px 6px;background:#fff;color:var(--ink-2);cursor:pointer;max-width:190px;}
+  .reason-select.unset{color:#B45309;border-color:#FDE68A;border-left-color:#F59E0B;background:#FFFBEB;}
+
+  .empty-state{background:#fff;border:1px dashed var(--line);border-radius:var(--radius);padding:40px;text-align:center;color:var(--sub);}
+  .empty-tasks-row td{padding:26px;text-align:center;color:var(--faint);font-size:13px;}
+
+  /* ---------- popovers / modals / toasts ---------- */
+  .menu{position:absolute;z-index:120;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(15,23,42,.18);padding:6px;min-width:220px;animation:fadeIn .15s ease;}
+  .menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:8px;font-size:13px;color:var(--ink);cursor:pointer;}
+  .menu button:hover{background:var(--line-soft);}
+  .menu hr{border:0;border-top:1px solid var(--line);margin:4px 0;}
+  .menu .cp-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:700;margin:6px 8px 4px;}
+  .menu label{display:flex;align-items:center;gap:9px;font-size:13px;padding:7px 8px;border-radius:8px;cursor:pointer;}
+  .menu label:hover{background:var(--line-soft);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:150;padding:20px;animation:fadeIn .15s;}
+  .modal-box{background:#fff;border-radius:16px;width:100%;max-width:560px;padding:22px 24px;box-shadow:0 30px 70px rgba(0,0,0,.3);}
+  .modal-box h3{margin:0 0 4px;font-size:17px;font-weight:800;}
+  .modal-box p.m-sub{margin:0 0 14px;font-size:12.5px;color:var(--sub);}
+  .modal-box textarea{width:100%;min-height:80px;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical;color:var(--ink);}
+  .modal-box textarea.code{min-height:260px;font-family:var(--mono);font-size:11.5px;}
+  .modal-box textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .modal-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:16px;}
+  .modal-actions .left{margin-right:auto;}
+  .m-shift{display:flex;align-items:center;gap:10px;background:var(--line-soft);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-family:var(--mono);font-size:14px;font-weight:600;}
+  .m-shift .old{text-decoration:line-through;color:var(--faint);}
+  .m-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:8px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all .12s;}
+  .chip .sw{width:9px;height:9px;border-radius:50%;background:var(--rc);}
+  .chip:hover{border-color:var(--rc);}
+  .chip.sel{background:var(--rc);border-color:var(--rc);color:#fff;}
+  .chip.sel .sw{background:#fff;}
+  .toast-wrap{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
+  .toast{pointer-events:auto;background:var(--navy);color:#fff;border-radius:12px;padding:11px 14px 11px 16px;font-size:13px;display:flex;align-items:center;gap:16px;box-shadow:0 14px 34px rgba(11,31,68,.35);animation:toastIn .2s ease;}
+  .toast button{border:0;background:transparent;color:#7DD3FC;font-weight:700;cursor:pointer;font-size:13px;}
+  @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---------- presentation (read-only) mode ---------- */
+  body.present .edit-only{display:none !important;}
+  body.present tbody input,body.present tbody textarea,body.present tbody select:not(.keep),body.present .sprint-name,body.present th .col-label,
+  body.present .brand [contenteditable],body.present .tab-name,body.present .pstep,body.present .rag-dot,body.present .sprint-dates .dp{pointer-events:none;}
+  body.present .dp-btn{display:none;}
+  body.present select.cell-select{background-image:none;padding-right:11px;}
+  body.present tbody textarea:placeholder-shown,body.present tbody input:placeholder-shown{opacity:0;}
+
+  ::-webkit-scrollbar{height:10px;width:10px;}
+  ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:6px;border:2px solid transparent;background-clip:padding-box;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @media (max-width:1200px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr));} .insights{grid-template-columns:1fr 1fr;} .insights .card:first-child{grid-column:1/-1;} }
+  @media (max-width:760px){
+    :root{--gutter:16px;}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .insights{grid-template-columns:1fr;}
+    .reason-row{grid-template-columns:120px 1fr 60px;}
+    .sprint-progress{margin-left:0;}
+    .vswitch button span.lbl{display:none;}
+  }
+  @media print{
+    .subnav,.app-actions,.toolbar,.edit-only,.dp-btn,.alertbar,.toast-wrap{display:none !important;}
+    body{background:#fff;}
+    thead{transform:none !important;}
+    .sprint-header{position:static;}
+    .kpi,.card,.sprint{box-shadow:none;break-inside:avoid;}
+  }
+
+  /* ---------- gantt (kept) ---------- */
+  .view-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+  .view-header h2{font-size:17px;font-weight:800;margin:0 0 3px;}
+  .view-header .view-sub{font-size:12px;color:var(--sub);margin:0;max-width:900px;}
+  .btn{font-size:13px;font-weight:600;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn.primary{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .btn.primary:hover{background:var(--navy-2);color:#fff;}
+  .gantt-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .gantt-title-block{text-align:center;padding:16px 20px 14px;border-bottom:2px solid var(--ink);}
+  .gantt-title-block .gantt-eyebrow{font-size:11px;color:var(--sub);font-weight:600;margin:0 0 4px;}
+  .gantt-title-block h2{font-size:19px;font-weight:800;margin:0;text-transform:uppercase;}
+  .gantt-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line);background:#FAFBFC;}
+  .gantt-legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 12px;}
+  .gantt-legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;}
+  .gantt-legend-swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+  .gantt-outer{overflow:auto;}
+  .gantt-table{display:flex;flex-direction:column;min-width:fit-content;}
+  .gantt-header-block{position:sticky;top:0;z-index:5;background:#fff;}
+  .gantt-header-row{display:flex;}
+  .gantt-corner{position:sticky;left:0;z-index:6;background:#F7F9FC;flex-shrink:0;width:240px;display:flex;align-items:center;padding:0 12px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .gantt-month-cell{flex-shrink:0;text-align:center;font-weight:800;font-size:11px;padding:6px 0;border-left:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .gantt-week-cell{flex-shrink:0;text-align:center;font-size:9px;color:var(--sub);font-family:var(--mono);padding:3px 0;}
+  .gantt-feature-row{display:flex;align-items:stretch;min-height:42px;border-bottom:1px solid var(--line-soft);}
+  .gantt-feature-label{position:sticky;left:0;z-index:2;width:240px;flex-shrink:0;display:flex;align-items:center;gap:6px;padding:6px 10px;border-right:1px solid var(--line);}
+  .gantt-feature-name{flex:1;font-size:12.5px;font-weight:700;padding:2px 4px;overflow:hidden;text-overflow:ellipsis;}
+  .gantt-edit-btn{flex-shrink:0;width:22px;height:22px;border:none;background:transparent;border-radius:6px;color:var(--sub);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+  .gantt-edit-btn:hover{background:var(--line-soft);color:var(--accent);}
+  .gantt-feature-track{position:relative;flex-shrink:0;}
+  .gantt-unscheduled{height:100%;display:flex;align-items:center;padding-left:10px;font-size:11px;color:var(--faint);font-style:italic;}
+  .gantt-seg{position:absolute;top:9px;height:22px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;font-weight:700;color:#fff;box-shadow:0 2px 4px rgba(20,30,45,.22);overflow:hidden;white-space:nowrap;padding:0 3px;}
+  .gantt-milestone{position:absolute;top:15px;width:11px;height:11px;background:#1F2937;transform:translateX(-50%) rotate(45deg);border:1.5px solid #fff;}
+  .gantt-edit-panel{padding:14px 16px;background:#F7F9FC;border-bottom:1px solid var(--line);}
+  .gantt-edit-panel h4{margin:0 0 10px;font-size:12.5px;font-weight:800;}
+  .gantt-edit-fields{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+  .gantt-edit-field{display:flex;flex-direction:column;gap:4px;}
+  .gantt-edit-field label{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;}
+  .gantt-stage-field{border-left:4px solid transparent;padding-left:8px;}
+  .gantt-stage-field input[type="number"]{width:64px;font-family:var(--mono);font-size:12px;text-align:center;border:1px solid var(--line);border-radius:7px;padding:6px 4px;}
+  .gantt-range{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;color:var(--sub);}
+  .gantt-empty{padding:40px;text-align:center;color:var(--faint);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <span class="brand-icon" contenteditable="true" spellcheck="false" id="bannerIcon" title="Click to change icon">🚀</span>
+        <div style="min-width:0">
+          <div class="brand-eyebrow" id="asOf">Product roadmap</div>
+          <h1 contenteditable="true" spellcheck="false" id="bannerTitle" data-placeholder="Untitled dashboard"></h1>
+          <p contenteditable="true" spellcheck="false" id="bannerSubtitle" data-placeholder="Add a subtitle..."></p>
+        </div>
+      </div>
+      <div class="app-actions">
+        <span class="sync loading" id="sync"><span class="dot"></span><span class="sync-text">Connecting…</span></span>
+        <button class="abtn" id="presentBtn" title="Read-only view for leadership — hides all editing controls">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span id="presentLabel">Present</span></button>
+        <button class="abtn primary edit-only" id="addTicketBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add ticket</button>
+        <button class="abtn" id="moreBtn" title="More actions">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+          More</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="subnav" id="subnav">
+    <div class="ptabs" id="tabbar"></div>
+    <div class="vswitch" id="viewbar"></div>
+  </nav>
+
+  <div id="alertSlot"></div>
+
+  <main class="page" id="ticketsView">
+    <section class="kpis" id="statsRow"></section>
+    <section class="insights" id="insights"></section>
+
+    <div class="toolbar" id="filterBar">
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="searchInput" placeholder="Search tickets, #number or assignee…">
+      </div>
+      <select class="fsel" id="filterSchedule"></select>
+      <select class="fsel" id="filterReason"></select>
+      <select class="fsel" id="filterStage"></select>
+      <select class="fsel" id="filterPriority"></select>
+      <select class="fsel" id="filterAssignee"></select>
+      <select class="fsel" id="filterHighlight"></select>
+      <button class="tbtn ghost" id="filterClearBtn">✕ Clear</button>
+      <span class="filter-count" id="filterCount"></span>
+      <span class="tb-spacer"></span>
+      <button class="tbtn" id="historyAllBtn"></button>
+      <button class="tbtn primary edit-only" id="addSprintBtn">+ Sprint</button>
+    </div>
+
+    <datalist id="teamList"></datalist>
+    <div id="sprintsContainer"></div>
+  </main>
+
+  <main class="page" id="ganttContainer" style="display:none;"></main>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+const PRIORITY_OPTIONS = [
+  {v:'P1', label:'P1 · Critical', cls:'pr-p1'},
+  {v:'P2', label:'P2 · High', cls:'pr-p2'},
+  {v:'P3', label:'P3 · Medium', cls:'pr-p3'},
+  {v:'P4', label:'P4 · Low', cls:'pr-p4'},
+];
+const STAGE_OPTIONS = [
+  {v:'BR', label:'Business Req', color:'#3346B8'},
+  {v:'DSN', label:'UI / UX Design', color:'#B02D80'},
+  {v:'DEV', label:'Development', color:'#D98E1B'},
+  {v:'UAT', label:'UAT', color:'#0D9488'},
+  {v:'PROD', label:'Production', color:'#16A34A'},
+];
+const TRACKER_STATUS_OPTIONS = [
+  {v:'New', label:'New', cls:'ts-new'},
+  {v:'In Progress', label:'In Progress', cls:'ts-inprogress'},
+  {v:'Feedback', label:'Feedback', cls:'ts-feedback'},
+  {v:'Blocked', label:'Blocked', cls:'ts-blocked'},
+  {v:'Done', label:'Done', cls:'ts-done'},
+  {v:'Closed', label:'Closed', cls:'ts-closed'},
+];
+// Delay classification — used for every date change and for the feature's overall status.
+const REASONS = [
+  {v:'vendor',    label:'Vendor / CMC',          color:'#7C3AED'},
+  {v:'req',       label:'Requirements change',   color:'#EA580C'},
+  {v:'newdesign', label:'New design required',   color:'#DB2777'},
+  {v:'designchg', label:'Design changes',        color:'#C026D3'},
+  {v:'capacity',  label:'Team capacity',         color:'#0D9488'},
+  {v:'deprio',    label:'Deprioritization',      color:'#475569'},
+  {v:'other',     label:'Other',                 color:'#A16207'},
+];
+const UNCLASSIFIED = {v:'', label:'Unclassified', color:'#F59E0B'};
+function reasonInfo(v){ return REASONS.find(r => r.v === v) || UNCLASSIFIED; }
+
+const SCHEDULE = {
+  ontrack:  {label:'On track',       color:'#16A34A'},
+  delayed:  {label:'Delayed',        color:'#DC2626'},
+  ahead:    {label:'Ahead of date',  color:'#0891B2'},
+  delivered:{label:'Delivered',      color:'#2563EB'},
+  nodate:   {label:'No date set',    color:'#94A3B8'},
+};
+const SCHEDULE_ORDER = ['ontrack','delayed','ahead','delivered','nodate'];
+const RAG_CYCLE = ['', 'green', 'amber', 'red'];
+const PROJECT_COLORS = ['#2563EB','#0D9488','#B02D80','#C2410C','#1D4ED8','#7C3AED'];
+
+const ICON = {
+  cal:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>`,
+  chev:`<svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>`,
+  down:`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
+  trash:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>`,
+  copy:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`,
+  history:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>`,
+};
+
+/* ============================================================
+   DATA MODEL
+   ============================================================ */
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function newRow(ticketNo){
+  return {
+    id: uid('row'), ticketNo,
+    task:'', priority:'P3', assignee:'', stage:'BR',
+    stageHistory:[{stage:'BR', at:new Date().toISOString()}],
+    delivery:'', baselineDate:'', dateChanges:[], deliveredAt:'',
+    scheduleOverride:'', delayReason:'',
+    effort:'', trackerStatus:'New', highlight:'', blocker:'', comment:'', custom:{}
+  };
+}
+function newSprint(name){ return { id: uid('sprint'), name: name || 'New sprint', collapsed:false, startDate:'', endDate:'', rows:[] }; }
+function newProject(name, colorIdx){
+  const n = name || 'New project';
+  return {
+    id: uid('proj'), name: n,
+    bannerTitle: `${n} — PM Roadmap Dashboard`,
+    subtitle: 'Product Management · Roadmap Dashboard',
+    icon: '🚀', color: PROJECT_COLORS[colorIdx % PROJECT_COLORS.length],
+    team: [], sprints:[ newSprint('Sprint 1') ]
+  };
+}
+function defaultLabels(){
+  return {
+    task:'Ticket Subject', priority:'Priority', assignee:'Assignee', stage:'Stage',
+    delivery:'Delivery Date', schedule:'Schedule Status', effort:'Effort', trackerStatus:'Tracker Status',
+    highlight:'RAG', blocker:'Blocker', comment:'Comment'
+  };
+}
+function defaultVisibility(){ return { assignee:true, schedule:true, effort:true, highlight:true, blocker:true, comment:true }; }
+function defaultData(){
+  const z = newProject('Zainmart', 0), o = newProject('Oodi', 1);
+  return { labels: defaultLabels(), customColumns: [], columnVisibility: defaultVisibility(), nextTicketNo: 6501, activeProjectId: z.id, projects: [z, o] };
+}
+
+let data = defaultData();
+let saveTimer = null, dataVersion = 0, lastSavedVersion = 0, lastRenderedSignature = '';
+let canSave = false;                 // stays false until the shared data has loaded — prevents overwriting it with an empty board
+let filters = emptyFilters();
+let activeView = 'tickets';
+let ganttEditingRowId = null;
+const expandedHistory = new Set();   // which rows show their full date history (local to this viewer)
+
+function emptyFilters(){ return { search:'', stage:'', priority:'', assignee:'', highlight:'', schedule:'', reason:'', blocked:false }; }
+
+/* ---------------- migration (keeps old saved data working) ---------------- */
+function migrateData(d){
+  if(!d || !Array.isArray(d.projects) || !d.projects.length) return defaultData();
+  d.labels = Object.assign(defaultLabels(), d.labels || {});
+  if(!Array.isArray(d.customColumns)) d.customColumns = [];
+  d.columnVisibility = Object.assign(defaultVisibility(), d.columnVisibility || {});
+  delete d.columnVisibility.receivedDate;
+  if(typeof d.nextTicketNo !== 'number') d.nextTicketNo = 6501;
+  const nowIso = new Date().toISOString();
+  d.projects.forEach(proj => {
+    if(proj.bannerTitle == null) proj.bannerTitle = `${proj.name} — PM Roadmap Dashboard`;
+    if(proj.subtitle == null) proj.subtitle = 'Product Management · Roadmap Dashboard';
+    if(!proj.icon) proj.icon = '🚀';
+    if(!proj.color) proj.color = PROJECT_COLORS[0];
+    if(!Array.isArray(proj.team)) proj.team = [];
+    if(!Array.isArray(proj.sprints)) proj.sprints = [];
+    proj.sprints.forEach(sprint => {
+      if(sprint.startDate == null) sprint.startDate = '';
+      if(sprint.endDate == null) sprint.endDate = '';
+      if(!Array.isArray(sprint.rows)) sprint.rows = [];
+      sprint.rows.forEach(row => {
+        if(row.ticketNo == null) row.ticketNo = d.nextTicketNo++;
+        if(row.task == null) row.task = '';
+        if(row.priority == null) row.priority = 'P3';
+        if(row.assignee == null) row.assignee = '';
+        if(row.stage === 'UIUX') row.stage = 'DSN';
+        if(!row.stage) row.stage = 'BR';
+        if(row.effort == null) row.effort = '';
+        if(row.trackerStatus == null){
+          const legacy = {'not-started':'New','in-progress':'In Progress','blocked':'Blocked','done':'Done'};
+          row.trackerStatus = legacy[row.status] || 'New';
+        }
+        ['highlight','blocker','comment','scheduleOverride','delayReason','deliveredAt'].forEach(k => { if(row[k] == null) row[k] = ''; });
+        if(row.delivery == null) row.delivery = '';
+        if(!row.custom) row.custom = {};
+        if(!Array.isArray(row.stageHistory) || !row.stageHistory.length) row.stageHistory = [{stage: row.stage, at: nowIso}];
+        // Old format kept only ONE previous date ({old, note}). Convert it into the new full history list.
+        if(!Array.isArray(row.dateChanges)){
+          row.dateChanges = [];
+          if(row.deliveryHistory && row.deliveryHistory.old){
+            row.dateChanges.push({ id: uid('chg'), from: row.deliveryHistory.old, to: row.delivery || row.deliveryHistory.old, at: '', reason:'', note: row.deliveryHistory.note || '' });
+          }
+        }
+        delete row.deliveryHistory;
+        if(row.baselineDate == null || row.baselineDate === ''){
+          row.baselineDate = row.dateChanges.length ? row.dateChanges[0].from : (row.delivery || '');
+        }
+      });
+    });
+  });
+  if(!d.projects.find(p => p.id === d.activeProjectId)) d.activeProjectId = d.projects[0].id;
+  return d;
+}
+
+/* ============================================================
+   PERSISTENCE (shared via /api/data)
+   ============================================================ */
+async function fetchServer(){
+  const res = await fetch('/api/data', {cache:'no-store'});
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  const json = await res.json();
+  if(!json || !('data' in json)) throw new Error('Bad response');
+  return json.data;   // null = nothing saved yet
+}
+async function loadData(){
+  setSync('loading');
+  try{
+    const serverData = await fetchServer();
+    canSave = true;
+    if(serverData && Array.isArray(serverData.projects) && serverData.projects.length){
+      data = migrateData(serverData);
+      setSync('saved');
+    } else {
+      await saveData();       // first run: store the starter board
+    }
+    clearAlert();
+  }catch(e){
+    console.error('Load failed', e);
+    canSave = false;
+    setSync('error');
+    showAlert("Couldn't load the shared roadmap data. To protect the saved data, nothing you change will be saved until the connection is back.");
+  }
+  render();
+}
+function scheduleSave(){
+  dataVersion++;
+  if(!canSave){ setSync('error'); return; }
+  setSync('saving');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveData, 500);
+}
+async function saveData(){
+  if(!canSave) return;
+  const versionAtStart = dataVersion;
+  try{
+    const res = await fetch('/api/data', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    if(versionAtStart === dataVersion) lastSavedVersion = versionAtStart;
+    setSync(dataVersion === lastSavedVersion ? 'saved' : 'saving');
+  }catch(e){ console.error('Save failed', e); setSync('error'); toast("Couldn't save — check your connection", 'Retry', () => saveData()); }
+}
+// Poll for teammates' changes every 5s (skips while you're typing or have unsaved edits)
+setInterval(async () => {
+  const a = document.activeElement;
+  if(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable)) return;
+  if(document.getElementById('modalOverlay') || document.querySelector('.menu')) return;
+  if(canSave && dataVersion !== lastSavedVersion) return;
+  try{
+    const serverData = await fetchServer();
+    if(!serverData || !Array.isArray(serverData.projects) || !serverData.projects.length) return;
+    const migrated = migrateData(serverData);
+    const keep = data.activeProjectId;
+    migrated.activeProjectId = migrated.projects.find(p => p.id === keep) ? keep : migrated.projects[0].id;
+    if(!canSave){ canSave = true; clearAlert(); setSync('saved'); data = migrated; dataVersion = lastSavedVersion; render(); return; }
+    if(JSON.stringify(migrated) === lastRenderedSignature) return;
+    data = migrated; render();
+  }catch(e){}
+}, 5000);
+
+function setSync(state){
+  const el = document.getElementById('sync');
+  el.className = 'sync ' + state;
+  el.querySelector('.sync-text').textContent = ({loading:'Connecting…', saving:'Saving…', saved:'All changes saved', error:'Not saved — offline'})[state];
+}
+function showAlert(msg){
+  document.getElementById('alertSlot').innerHTML = `<div class="alertbar"><span>⚠</span><span>${escapeHtml(msg)}</span><button id="alertRetry">Retry</button></div>`;
+  document.getElementById('alertRetry').onclick = loadData;
+}
+function clearAlert(){ document.getElementById('alertSlot').innerHTML = ''; }
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const $ = s => document.querySelector(s);
+function escapeHtml(str){ return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+function autoGrow(el){ el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+const pad = n => String(n).padStart(2,'0');
+function toLocalISODate(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function todayISO(){ return toLocalISODate(new Date()); }
+function isoToUTC(iso){ const [y,m,d] = iso.split('-').map(Number); return Date.UTC(y, m-1, d); }
+function diffDays(a, b){ return Math.round((isoToUTC(b) - isoToUTC(a)) / 86400000); }
+// All dates are shown as dd/mm/yyyy
+function fmtDate(iso){
+  if(!iso) return '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : iso;
+}
+function fmtStamp(ts){ if(!ts) return ''; const d = new Date(ts); return isNaN(d) ? '' : fmtDate(toLocalISODate(d)); }
+// Accepts 28/10/2026, 28-10-2026, 28.10.26, 28102026 → '2026-10-28'. '' = cleared, null = invalid
+function parseDMY(str){
+  const s = String(str || '').trim();
+  if(!s) return '';
+  let m = /^(\d{1,2})[\/\-. ](\d{1,2})[\/\-. ](\d{2}|\d{4})$/.exec(s) || /^(\d{2})(\d{2})(\d{4})$/.exec(s);
+  if(!m) return null;
+  let d = +m[1], mo = +m[2], y = +m[3];
+  if(y < 100) y += 2000;
+  const dt = new Date(Date.UTC(y, mo-1, d));
+  if(dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo-1 || dt.getUTCDate() !== d) return null;
+  return `${y}-${pad(mo)}-${pad(d)}`;
+}
+function signedDays(n){ return n > 0 ? `+${n}d` : n < 0 ? `−${Math.abs(n)}d` : '0d'; }
+function plural(n, w){ return `${n} ${w}${n === 1 ? '' : 's'}`; }
+
+function getActiveProject(){ return data.projects.find(p => p.id === data.activeProjectId) || data.projects[0]; }
+function findSprintInActive(id){ return getActiveProject().sprints.find(s => s.id === id); }
+function allRowsInActive(){ const out = []; getActiveProject().sprints.forEach(s => s.rows.forEach(r => out.push(r))); return out; }
+function findRow(rowId){
+  for(const s of getActiveProject().sprints){ const r = s.rows.find(x => x.id === rowId); if(r) return {row:r, sprint:s}; }
+  return {};
+}
+
+function setRowStage(row, stage){
+  if(row.stage === stage) return;
+  row.stage = stage;
+  if(!Array.isArray(row.stageHistory)) row.stageHistory = [];
+  row.stageHistory.push({ stage, at: new Date().toISOString() });
+}
+function currentStageDays(row){
+  const h = row.stageHistory || []; const last = h[h.length-1];
+  return last ? Math.max(0, (Date.now() - new Date(last.at)) / 86400000) : 0;
+}
+function isDelivered(r){ return r.stage === 'PROD' || r.trackerStatus === 'Done' || r.trackerStatus === 'Closed'; }
+// Wrap any edit that might complete / re-open a ticket so we remember the actual delivery day
+function trackDelivery(row, fn){
+  const was = isDelivered(row); fn(); const now = isDelivered(row);
+  if(!was && now) row.deliveredAt = todayISO();
+  if(was && !now) row.deliveredAt = '';
+}
+function baselineOf(r){ return r.baselineDate || (r.dateChanges && r.dateChanges[0] && r.dateChanges[0].from) || r.delivery || ''; }
+function lastKnownDate(r){ const c = r.dateChanges; return (c.length && c[c.length-1].to) || r.baselineDate || ''; }
+
+/* ---------- schedule status: on track / delayed (with reason) / ahead / delivered ---------- */
+function rowSchedule(r){
+  const base = baselineOf(r), cur = r.delivery, today = todayISO();
+  const slip = (base && cur) ? diffDays(base, cur) : 0;       // + = pushed out vs original plan
+  const delivered = isDelivered(r);
+  let auto, overdue = 0, deliveredDelta = null, lateBy = 0;
+  if(delivered){
+    if(r.deliveredAt && cur) deliveredDelta = diffDays(cur, r.deliveredAt);   // + = delivered after the date
+    if(deliveredDelta !== null && deliveredDelta < 0 && slip <= 0) auto = 'ahead';
+    else if(slip > 0 || (deliveredDelta || 0) > 0){ auto = 'delayed'; lateBy = Math.max(0, slip) + Math.max(0, deliveredDelta || 0); }
+    else auto = 'delivered';
+  } else if(!cur){
+    auto = 'nodate';
+  } else {
+    overdue = cur < today ? diffDays(cur, today) : 0;
+    if(overdue > 0 || slip > 0){ auto = 'delayed'; lateBy = Math.max(0, slip) + overdue; }
+    else if(slip < 0) auto = 'ahead';
+    else auto = 'ontrack';
+  }
+  const state = r.scheduleOverride || auto;
+  let reason = '';
+  if(state === 'delayed'){
+    reason = r.delayReason || '';
+    if(!reason){
+      for(let i = r.dateChanges.length - 1; i >= 0; i--){
+        const c = r.dateChanges[i];
+        if(c.reason && c.from && c.to && diffDays(c.from, c.to) > 0){ reason = c.reason; break; }
+      }
+    }
+  }
+  return { state, auto, slip, overdue, lateBy, delivered, deliveredDelta, reason, base };
+}
+
+function rowMatchesFilter(row, sc){
+  const s = sc || rowSchedule(row);
+  if(filters.search){
+    const q = filters.search.toLowerCase();
+    const hay = `${row.task} #${row.ticketNo} ${row.assignee} ${row.comment}`.toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  if(filters.stage && row.stage !== filters.stage) return false;
+  if(filters.priority && row.priority !== filters.priority) return false;
+  if(filters.assignee && row.assignee !== filters.assignee) return false;
+  if(filters.highlight){
+    if(filters.highlight === 'none' && row.highlight) return false;
+    if(filters.highlight !== 'none' && row.highlight !== filters.highlight) return false;
+  }
+  if(filters.schedule && s.state !== filters.schedule) return false;
+  if(filters.reason){
+    if(s.state !== 'delayed') return false;
+    if((s.reason || 'none') !== filters.reason) return false;
+  }
+  if(filters.blocked && !((row.blocker && row.blocker.trim()) || row.trackerStatus === 'Blocked')) return false;
+  return true;
+}
+function anyFilter(){ return Object.values(filters).some(Boolean); }
+
+/* ============================================================
+   dd/mm/yyyy DATE PICKER  (type it, or click the calendar)
+   ============================================================ */
+function dpHTML(iso, attrs = '', cls = ''){
+  return `<span class="dp ${cls}" data-value="${iso || ''}" ${attrs}>`+
+    `<input type="text" class="dp-text" placeholder="dd/mm/yyyy" maxlength="10" inputmode="numeric" autocomplete="off" value="${fmtDate(iso)}">`+
+    `<button type="button" class="dp-btn" tabindex="-1" title="Open calendar" aria-label="Open calendar">${ICON.cal}</button>`+
+    `<input type="date" class="dp-native" tabindex="-1" aria-hidden="true" value="${iso || ''}"></span>`;
+}
+function dpCommit(wrap, iso){
+  const text = wrap.querySelector('.dp-text');
+  if(iso === null || (iso === '' && wrap.hasAttribute('data-required'))){
+    wrap.classList.remove('invalid'); void wrap.offsetWidth; wrap.classList.add('invalid');
+    text.value = fmtDate(wrap.dataset.value);
+    toast('Please use the format dd/mm/yyyy');
+    return;
+  }
+  wrap.classList.remove('invalid');
+  text.value = fmtDate(iso);
+  if(iso !== (wrap.dataset.value || '')){
+    wrap.dataset.value = iso;
+    wrap.dispatchEvent(new CustomEvent('dpcommit', { bubbles:true, detail:{ iso } }));
+  }
+}
+document.addEventListener('focusout', e => { if(e.target.classList && e.target.classList.contains('dp-text')) dpCommit(e.target.closest('.dp'), parseDMY(e.target.value)); });
+document.addEventListener('keydown', e => {
+  if(!(e.target.classList && e.target.classList.contains('dp-text'))) return;
+  if(e.key === 'Enter'){ e.preventDefault(); e.target.blur(); }
+  if(e.key === 'Escape'){ e.target.value = fmtDate(e.target.closest('.dp').dataset.value); e.target.blur(); }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(!(t.classList && t.classList.contains('dp-text'))) return;
+  if(/\/\//.test(t.value)) t.value = t.value.replace(/\/{2,}/g, '/');          // user typed "/" after an auto-slash
+  else if(e.inputType === 'insertText' && /^\d{2}$|^\d{1,2}\/\d{2}$/.test(t.value)) t.value += '/';
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('.dp-btn'); if(!b) return;
+  const wrap = b.closest('.dp'), nat = wrap.querySelector('.dp-native');
+  nat.value = wrap.dataset.value || '';
+  try{ nat.showPicker(); }catch(_){ nat.style.pointerEvents = 'auto'; nat.focus(); nat.click(); nat.style.pointerEvents = ''; }
+});
+document.addEventListener('change', e => { if(e.target.classList && e.target.classList.contains('dp-native')) dpCommit(e.target.closest('.dp'), e.target.value || ''); });
+
+/* ============================================================
+   UI PRIMITIVES: toast, modal, menu
+   ============================================================ */
+function toast(msg, actionLabel, onAction, ms = 5000){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span>${escapeHtml(msg)}</span>${actionLabel ? `<button>${escapeHtml(actionLabel)}</button>` : ''}`;
+  if(actionLabel) t.querySelector('button').onclick = () => { t.remove(); onAction(); };
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+function closeModal(){ const o = document.getElementById('modalOverlay'); if(o) o.remove(); }
+function openModal(innerHTML){
+  closeModal();
+  const o = document.createElement('div');
+  o.className = 'modal-overlay'; o.id = 'modalOverlay';
+  o.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true">${innerHTML}</div>`;
+  o.addEventListener('mousedown', e => { if(e.target === o) closeModal(); });
+  document.body.appendChild(o);
+  return o;
+}
+function closeMenus(){ document.querySelectorAll('.menu').forEach(m => m.remove()); }
+function openMenu(anchor, html){
+  closeMenus();
+  const m = document.createElement('div');
+  m.className = 'menu'; m.innerHTML = html;
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect();
+  m.style.top = (r.bottom + window.scrollY + 6) + 'px';
+  m.style.left = Math.max(8, Math.min(r.right - m.offsetWidth, window.innerWidth - m.offsetWidth - 8) + window.scrollX) + 'px';
+  setTimeout(() => {
+    document.addEventListener('mousedown', function off(ev){ if(!m.contains(ev.target) && !anchor.contains(ev.target)){ m.remove(); document.removeEventListener('mousedown', off); } });
+  }, 0);
+  return m;
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closeModal(); closeMenus(); } });
+
+/* ============================================================
+   RENDER ROOT
+   ============================================================ */
+const VIEWS = [
+  {v:'tickets', label:'Roadmap', icon:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`},
+  {v:'gantt', label:'Gantt', icon:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h8M8 12h10M6 18h7"/></svg>`},
+];
+function render(){
+  renderBanner(); renderTabs(); renderViewbar(); renderActiveView();
+  lastRenderedSignature = JSON.stringify(data);
+}
+function refreshTickets(){ renderStats(); renderInsights(); renderFilterBar(); renderSprints(); lastRenderedSignature = JSON.stringify(data); }
+function renderActiveView(){
+  $('#ticketsView').style.display = activeView === 'tickets' ? '' : 'none';
+  $('#ganttContainer').style.display = activeView === 'gantt' ? '' : 'none';
+  if(activeView === 'tickets') refreshTickets(); else renderGanttView();
+}
+function renderViewbar(){
+  const bar = $('#viewbar');
+  bar.innerHTML = VIEWS.map(v => `<button class="${activeView===v.v?'active':''}" data-view="${v.v}">${v.icon}<span class="lbl">${v.label}</span></button>`).join('');
+  bar.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { activeView = b.dataset.view; renderViewbar(); renderActiveView(); });
+}
+function renderBanner(){
+  const proj = getActiveProject();
+  const iconEl = $('#bannerIcon'), titleEl = $('#bannerTitle'), subEl = $('#bannerSubtitle');
+  if(document.activeElement !== iconEl) iconEl.textContent = proj.icon;
+  if(document.activeElement !== titleEl) titleEl.textContent = proj.bannerTitle || '';
+  if(document.activeElement !== subEl) subEl.textContent = proj.subtitle || '';
+  $('#asOf').textContent = `Product roadmap · As of ${fmtDate(todayISO())}`;
+  iconEl.oninput = () => { proj.icon = iconEl.textContent.trim().slice(0,4) || '🚀'; scheduleSave(); };
+  titleEl.oninput = () => { proj.bannerTitle = titleEl.textContent; scheduleSave(); };
+  subEl.oninput = () => { proj.subtitle = subEl.textContent; scheduleSave(); };
+  [iconEl, titleEl, subEl].forEach(el => el.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); el.blur(); } });
+}
+function renderTabs(){
+  const bar = $('#tabbar');
+  bar.innerHTML = '';
+  data.projects.forEach(proj => {
+    const tab = document.createElement('div');
+    tab.className = 'ptab' + (proj.id === data.activeProjectId ? ' active' : '');
+    tab.title = 'Double-click the name to rename';
+    tab.innerHTML = `<span class="dot-chip" style="background:${proj.color}"></span><span class="tab-name" spellcheck="false" data-proj-id="${proj.id}">${escapeHtml(proj.name)}</span><span class="remove-tab edit-only" title="Delete project">&times;</span>`;
+    const nameEl = tab.querySelector('.tab-name');
+    tab.addEventListener('click', e => {
+      if(e.target.closest('.remove-tab') || nameEl.isContentEditable) return;
+      if(data.activeProjectId !== proj.id){ data.activeProjectId = proj.id; filters = emptyFilters(); render(); }
+    });
+    nameEl.addEventListener('dblclick', () => {
+      if(document.body.classList.contains('present')) return;
+      nameEl.contentEditable = 'true'; nameEl.focus(); document.execCommand('selectAll', false, null);
+    });
+    nameEl.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); nameEl.blur(); } });
+    nameEl.addEventListener('blur', () => {
+      if(!nameEl.isContentEditable) return;
+      nameEl.contentEditable = 'false';
+      const v = nameEl.textContent.trim() || 'Untitled project';
+      if(v !== proj.name){ proj.name = v; scheduleSave(); }
+      render();
+    });
+    tab.querySelector('.remove-tab').addEventListener('click', e => {
+      e.stopPropagation();
+      if(data.projects.length <= 1){ toast('You need at least one project'); return; }
+      if(confirm(`Delete project "${proj.name}" and all its sprints and tickets?`)){
+        data.projects = data.projects.filter(p => p.id !== proj.id);
+        if(data.activeProjectId === proj.id) data.activeProjectId = data.projects[0].id;
+        render(); scheduleSave();
+      }
+    });
+    bar.appendChild(tab);
+  });
+  const add = document.createElement('div');
+  add.className = 'add-tab edit-only'; add.textContent = '+'; add.title = 'Add project';
+  add.onclick = () => {
+    const proj = newProject('New project', data.projects.length);
+    data.projects.push(proj); data.activeProjectId = proj.id;
+    render(); scheduleSave();
+    const el = document.querySelector(`.tab-name[data-proj-id="${proj.id}"]`);
+    if(el) el.dispatchEvent(new MouseEvent('dblclick'));
+  };
+  bar.appendChild(add);
+}
+
+/* ---------------- KPI cards ---------------- */
+function renderStats(){
+  const rows = allRowsInActive(), n = rows.length;
+  const sc = rows.map(rowSchedule);
+  const count = k => sc.filter(s => s.state === k).length;
+  const delayed = sc.filter(s => s.state === 'delayed');
+  const avgLate = delayed.length ? Math.round(delayed.reduce((a, s) => a + s.lateBy, 0) / delayed.length) : 0;
+  const blocked = rows.filter(r => (r.blocker && r.blocker.trim()) || r.trackerStatus === 'Blocked').length;
+  const pct = x => n ? Math.round(x / n * 100) : 0;
+  const unclassified = delayed.filter(s => !s.reason).length;
+  const cards = [
+    {k:'', color:'#0B1F44', label:'Total features', num:n, sub:`${plural(getActiveProject().sprints.length,'sprint')}`, p:100},
+    {k:'ontrack', color:SCHEDULE.ontrack.color, label:'On track', num:count('ontrack'), sub:`${pct(count('ontrack'))}% of portfolio`, p:pct(count('ontrack'))},
+    {k:'delayed', color:SCHEDULE.delayed.color, label:'Delayed', num:count('delayed'), sub: delayed.length ? `avg ${avgLate}d late${unclassified ? ` · ${unclassified} unclassified` : ''}` : 'no delays', p:pct(count('delayed'))},
+    {k:'ahead', color:SCHEDULE.ahead.color, label:'Ahead of date', num:count('ahead'), sub:'before planned date', p:pct(count('ahead'))},
+    {k:'delivered', color:SCHEDULE.delivered.color, label:'Delivered on time', num:count('delivered'), sub:`${pct(sc.filter(s => s.delivered).length)}% shipped overall`, p:pct(count('delivered'))},
+    {k:'blocked', color:'#B45309', label:'Blocked', num:blocked, sub:'open blockers', p:pct(blocked)},
+  ];
+  const el = $('#statsRow');
+  el.innerHTML = cards.map(c => {
+    const active = c.k === 'blocked' ? filters.blocked : (c.k && filters.schedule === c.k);
+    return `<button class="kpi ${active ? 'active' : ''}" style="--k:${c.color}" data-kpi="${c.k}" title="${c.k ? 'Click to filter' : 'Click to clear filters'}">
+      <div class="kpi-label"><span class="kd"></span>${c.label}</div>
+      <div class="kpi-num">${c.num}${c.k && n ? `<small>${c.p}%</small>` : ''}</div>
+      <div class="kpi-sub">${escapeHtml(c.sub)}</div>
+      <div class="kpi-bar"><span style="width:${c.p}%"></span></div></button>`;
+  }).join('');
+  el.querySelectorAll('[data-kpi]').forEach(b => b.onclick = () => {
+    const k = b.dataset.kpi;
+    if(!k){ filters = emptyFilters(); }
+    else if(k === 'blocked'){ filters.blocked = !filters.blocked; }
+    else { filters.schedule = filters.schedule === k ? '' : k; filters.reason = ''; }
+    refreshTickets();
+  });
+}
+
+/* ---------------- insight cards ---------------- */
+function renderInsights(){
+  const rows = allRowsInActive(), n = rows.length;
+  const sc = rows.map(rowSchedule);
+  // 1. delivery health
+  const counts = SCHEDULE_ORDER.map(k => ({k, n: sc.filter(s => s.state === k).length}));
+  const health = `<div class="card">
+    <div class="card-h"><h3>Delivery health</h3><span class="card-sub">${plural(n,'feature')} · vs. original plan</span></div>
+    <div class="health-bar">${n ? counts.filter(c => c.n).map(c => `<div class="health-seg" data-sched="${c.k}" title="${SCHEDULE[c.k].label}: ${c.n}" style="flex-grow:${c.n};background:${SCHEDULE[c.k].color}"></div>`).join('') : ''}</div>
+    <div class="legend">${counts.map(c => `<div class="legend-item ${filters.schedule===c.k?'active':''}" data-sched="${c.k}"><span class="sw" style="background:${SCHEDULE[c.k].color}"></span>${SCHEDULE[c.k].label}<b>${c.n}</b><span class="pct">${n ? Math.round(c.n/n*100) : 0}%</span></div>`).join('')}</div>
+  </div>`;
+  // 2. delay reasons
+  const delayed = rows.map((r,i) => ({r, s:sc[i]})).filter(x => x.s.state === 'delayed');
+  const groups = {};
+  delayed.forEach(({s}) => { const k = s.reason || 'none'; (groups[k] = groups[k] || {n:0, days:0}); groups[k].n++; groups[k].days += s.lateBy; });
+  const list = Object.entries(groups).sort((a,b) => b[1].n - a[1].n || b[1].days - a[1].days);
+  const max = Math.max(1, ...list.map(x => x[1].n));
+  const reasons = `<div class="card">
+    <div class="card-h"><h3>Why features are delayed</h3><span class="card-sub">${plural(delayed.length,'delayed feature')}</span></div>
+    ${list.length ? list.map(([k, g]) => { const ri = reasonInfo(k === 'none' ? '' : k); return `
+      <div class="reason-row ${filters.reason===k?'active':''}" data-reason-filter="${k}" title="Click to show these features">
+        <span class="reason-name"><span class="sw" style="background:${ri.color}"></span>${ri.label}</span>
+        <div class="reason-track"><div class="reason-fill" style="width:${g.n/max*100}%;background:${ri.color}"></div></div>
+        <span class="reason-val"><b>${g.n}</b> · ${g.days}d</span></div>`; }).join('')
+      : `<div class="empty-insight"><span class="big">✓</span>No delayed features</div>`}
+  </div>`;
+  // 3. pipeline
+  const stageCounts = STAGE_OPTIONS.map(o => ({o, n: rows.filter(r => r.stage === o.v).length}));
+  const smax = Math.max(1, ...stageCounts.map(x => x.n));
+  const pipe = `<div class="card">
+    <div class="card-h"><h3>Pipeline by stage</h3><span class="card-sub">click a bar to filter</span></div>
+    <div class="pipe">${stageCounts.map(({o, n}) => `<div class="pipe-col ${filters.stage===o.v?'active':''}" data-stage-filter="${o.v}" title="${o.label}: ${n}">
+      <span class="pipe-n">${n}</span><div class="pipe-bar" style="height:${Math.max(4, n/smax*90)}px;background:${o.color}"></div><span class="pipe-l">${o.v}</span></div>`).join('')}</div>
+  </div>`;
+  const el = $('#insights');
+  el.innerHTML = health + reasons + pipe;
+  el.querySelectorAll('[data-sched]').forEach(x => x.onclick = () => { filters.schedule = filters.schedule === x.dataset.sched ? '' : x.dataset.sched; filters.reason = ''; refreshTickets(); });
+  el.querySelectorAll('[data-reason-filter]').forEach(x => x.onclick = () => { const k = x.dataset.reasonFilter; filters.reason = filters.reason === k ? '' : k; filters.schedule = ''; refreshTickets(); });
+  el.querySelectorAll('[data-stage-filter]').forEach(x => x.onclick = () => { filters.stage = filters.stage === x.dataset.stageFilter ? '' : x.dataset.stageFilter; refreshTickets(); });
+}
+
+/* ---------------- filter bar ---------------- */
+function renderFilterBar(){
+  const rows = allRowsInActive();
+  const opt = (v, label, cur) => `<option value="${escapeHtml(v)}" ${cur===v?'selected':''}>${escapeHtml(label)}</option>`;
+  const sel = (id, html, val) => { const el = $(id); el.innerHTML = html; el.classList.toggle('set', !!val); return el; };
+  sel('#filterSchedule', opt('', 'Status: All', filters.schedule) + SCHEDULE_ORDER.map(k => opt(k, SCHEDULE[k].label, filters.schedule)).join(''), filters.schedule)
+    .onchange = e => { filters.schedule = e.target.value; refreshTickets(); };
+  sel('#filterReason', opt('', 'Delay reason: All', filters.reason) + REASONS.map(r => opt(r.v, r.label, filters.reason)).join('') + opt('none', 'Unclassified', filters.reason), filters.reason)
+    .onchange = e => { filters.reason = e.target.value; refreshTickets(); };
+  sel('#filterStage', opt('', 'Stage: All', filters.stage) + STAGE_OPTIONS.map(o => opt(o.v, o.label, filters.stage)).join(''), filters.stage)
+    .onchange = e => { filters.stage = e.target.value; refreshTickets(); };
+  sel('#filterPriority', opt('', 'Priority: All', filters.priority) + PRIORITY_OPTIONS.map(o => opt(o.v, o.label, filters.priority)).join(''), filters.priority)
+    .onchange = e => { filters.priority = e.target.value; refreshTickets(); };
+  const assignees = Array.from(new Set(rows.map(r => r.assignee).filter(Boolean))).sort();
+  sel('#filterAssignee', opt('', 'Assignee: All', filters.assignee) + assignees.map(a => opt(a, a, filters.assignee)).join(''), filters.assignee)
+    .onchange = e => { filters.assignee = e.target.value; refreshTickets(); };
+  sel('#filterHighlight', opt('', 'RAG: All', filters.highlight) + [['none','No RAG'],['green','Green'],['amber','Amber'],['red','Red']].map(([v,l]) => opt(v, l, filters.highlight)).join(''), filters.highlight)
+    .onchange = e => { filters.highlight = e.target.value; refreshTickets(); };
+  const search = $('#searchInput');
+  if(search.value !== filters.search) search.value = filters.search;
+  search.oninput = () => { filters.search = search.value; renderSprints(); updateFilterCount(); };
+  $('#filterClearBtn').style.display = anyFilter() ? '' : 'none';
+  $('#filterClearBtn').onclick = () => { filters = emptyFilters(); refreshTickets(); };
+  updateFilterCount();
+  // history expand/collapse all
+  const withHist = rows.filter(r => r.dateChanges.length);
+  const anyOpen = withHist.some(r => expandedHistory.has(r.id));
+  const hb = $('#historyAllBtn');
+  hb.innerHTML = `${ICON.history} ${anyOpen ? 'Hide' : 'Show'} date history`;
+  hb.disabled = !withHist.length;
+  hb.style.opacity = withHist.length ? '' : '.5';
+  hb.onclick = () => { if(anyOpen) expandedHistory.clear(); else withHist.forEach(r => expandedHistory.add(r.id)); renderFilterBar(); renderSprints(); };
+}
+function updateFilterCount(){
+  const rows = allRowsInActive();
+  const shown = rows.filter(r => rowMatchesFilter(r)).length;
+  $('#filterCount').textContent = anyFilter() ? `${shown} of ${rows.length} shown` : '';
+  $('#filterClearBtn').style.display = anyFilter() ? '' : 'none';
+}
+
+/* ============================================================
+   SPRINT TABLES
+   ============================================================ */
+function visibleCols(){
+  const v = data.columnVisibility, cols = [{k:'no'}, {k:'task'}, {k:'priority'}];
+  if(v.assignee) cols.push({k:'assignee'});
+  cols.push({k:'stage'}, {k:'delivery'});
+  if(v.schedule) cols.push({k:'schedule'});
+  if(v.effort) cols.push({k:'effort'});
+  cols.push({k:'trackerStatus'});
+  if(v.highlight) cols.push({k:'highlight'});
+  if(v.blocker) cols.push({k:'blocker'});
+  if(v.comment) cols.push({k:'comment'});
+  data.customColumns.forEach(col => cols.push({k:'custom', col}));
+  cols.push({k:'actions'});
+  return cols;
+}
+function headHTML(cols){
+  return cols.map(c => {
+    if(c.k === 'no') return `<th style="width:92px">#</th>`;
+    if(c.k === 'actions') return `<th class="edit-only" style="width:170px">Actions</th>`;
+    if(c.k === 'custom') return `<th><div class="col-head"><span class="col-label" contenteditable="true" spellcheck="false" data-custom-label="${c.col.id}">${escapeHtml(c.col.label)}</span><span class="remove-col edit-only" data-remove-col="${c.col.id}" title="Remove column">&times;</span></div></th>`;
+    return `<th><span class="col-label" contenteditable="true" spellcheck="false" data-label="${c.k}">${escapeHtml(data.labels[c.k])}</span></th>`;
+  }).join('');
+}
+function buildSelect(field, current, options, extraCls = ''){
+  const cur = options.find(o => o.v === current) || options[0];
+  return `<select class="cell-select ${cur.cls} ${extraCls}" data-field="${field}">` + options.map(o => `<option value="${o.v}" ${o.v===current?'selected':''}>${o.label}</option>`).join('') + `</select>`;
+}
+function stepsHTML(row){
+  const idx = STAGE_OPTIONS.findIndex(o => o.v === row.stage);
+  const cur = STAGE_OPTIONS[idx] || STAGE_OPTIONS[0];
+  const d = currentStageDays(row);
+  return `<div class="progress-steps">` + STAGE_OPTIONS.map((o, i) => {
+    const cls = i < idx ? 'done' : i === idx ? 'current' : '';
+    return `<span class="pstep ${cls}" data-pstep="${o.v}" title="${o.label}${cls==='current'?' (current)':cls==='done'?' (completed)':' — click to move here'}">${o.v}</span>`;
+  }).join('') + `</div><div class="stage-meta">${cur.label} · ${d < 1 ? 'today' : Math.floor(d) + 'd in stage'}</div>`;
+}
+function reasonOptions(selected, placeholder){
+  return `<option value="" ${!selected?'selected':''}>${placeholder}</option>` + REASONS.map(r => `<option value="${r.v}" ${selected===r.v?'selected':''}>${r.label}</option>`).join('');
+}
+function deliveryHTML(r, s){
+  const changes = r.dateChanges;
+  let h = `<div class="date-cell">${dpHTML(r.delivery, 'data-dp="delivery"', 'st-' + s.state)}`;
+  if(changes.length){
+    const open = expandedHistory.has(r.id);
+    const cls = s.slip > 0 ? 'late' : s.slip < 0 ? 'early' : '';
+    h += `<div><button class="hist-toggle ${cls} ${open?'open':''}" data-hist title="${open?'Hide':'Show'} every date change">${ICON.chev}${plural(changes.length,'change')}${s.base && r.delivery ? ` · ${signedDays(s.slip)} vs plan` : ''}</button></div>`;
+    if(open){
+      const base = baselineOf(r);
+      h += `<ol class="hist"><li class="hist-item superseded"><div class="hist-row"><span class="hist-date">${fmtDate(base) || '—'}</span><span class="hist-tag">Original plan</span></div></li>`;
+      changes.forEach((c, i) => {
+        const sh = (c.from && c.to) ? diffDays(c.from, c.to) : 0;
+        const cls2 = sh > 0 ? 'late' : sh < 0 ? 'early' : '';
+        const last = i === changes.length - 1;
+        h += `<li class="hist-item ${cls2} ${last?'current':'superseded'}">
+          <div class="hist-row"><span class="hist-date">${fmtDate(c.to) || '—'}</span><span class="shift ${cls2}">${signedDays(sh)}</span>${c.at ? `<span class="hist-meta">changed ${fmtStamp(c.at)}</span>` : ''}<button class="hist-del edit-only" data-change-del="${c.id}" title="Remove this entry">&times;</button></div>
+          <select class="hist-reason" data-change-reason="${c.id}" style="--rc:${c.reason ? reasonInfo(c.reason).color : '#CBD5E1'}">${reasonOptions(c.reason, sh > 0 ? 'Select delay reason…' : 'Reason (optional)…')}</select>
+          <input class="hist-note" data-change-note="${c.id}" placeholder="Add a note…" value="${escapeHtml(c.note || '')}">
+        </li>`;
+      });
+      h += `</ol>`;
+    }
+  } else if(r.delivery){
+    h += `<div class="plan-tag">Original plan</div>`;
+  }
+  return h + `</div>`;
+}
+function scheduleHTML(r, s){
+  const label = k => SCHEDULE[k].label;
+  const opts = `<option value="" ${!r.scheduleOverride?'selected':''}>${label(s.auto)}</option>` +
+    ['ontrack','delayed','ahead','delivered'].map(k => `<option value="${k}" ${r.scheduleOverride===k?'selected':''}>✎ ${label(k)}</option>`).join('');
+  let meta = '', late = false;
+  if(s.state === 'delayed'){
+    late = true;
+    if(s.overdue > 0) meta = `Overdue by ${s.overdue}d${s.slip > 0 ? ` · slipped ${signedDays(s.slip)}` : ''}`;
+    else if(s.delivered) meta = `Delivered late · ${signedDays(s.lateBy)}`;
+    else if(s.slip > 0) meta = `Slipped ${signedDays(s.slip)} vs original plan`;
+    else meta = 'Marked delayed';
+  } else if(s.state === 'ahead'){
+    meta = s.delivered && s.deliveredDelta < 0 ? `Delivered ${Math.abs(s.deliveredDelta)}d before date` : s.slip < 0 ? `Pulled in ${signedDays(s.slip)}` : 'Ahead of plan';
+  } else if(s.state === 'ontrack'){
+    if(r.delivery){ const d = diffDays(todayISO(), r.delivery); meta = d === 0 ? 'Due today' : `Due in ${d}d`; }
+  } else if(s.state === 'delivered'){
+    meta = r.deliveredAt ? `Shipped ${fmtDate(r.deliveredAt)}` : 'Shipped';
+  } else meta = 'Add a delivery date';
+  let h = `<div class="sched"><select class="cell-select st-${s.state}" data-sched-override title="Status is calculated automatically from the dates. Choose an option with ✎ to set it manually.">${opts}</select>`;
+  if(meta) h += `<span class="sched-meta ${late?'late':''}">${meta}</span>`;
+  if(s.state === 'delayed'){
+    const ri = reasonInfo(s.reason);
+    h += `<select class="reason-select ${s.reason ? '' : 'unset'}" data-delay-reason style="--rc:${ri.color}" title="Why is this feature delayed?">${reasonOptions(s.reason, '⚠ Classify delay reason…')}</select>`;
+  }
+  return h + `</div>`;
+}
+function rowHTML(row, idx, sprint, proj, s, cols){
+  const hidden = !rowMatchesFilter(row, s);
+  const tds = cols.map(c => {
+    switch(c.k){
+      case 'no': return `<td class="order-cell" style="--hc:${SCHEDULE[s.state].color}">
+          <div class="ticket-no-row"><span class="ticket-hash">#</span><input type="text" class="ticket-no-input" data-field="ticketNo" value="${escapeHtml(String(row.ticketNo))}" title="Ticket number"></div>
+          <span class="order-btns edit-only"><button class="icon-btn" data-action="up" ${idx===0?'disabled':''} title="Move up">&uarr;</button><button class="icon-btn" data-action="down" ${idx===sprint.rows.length-1?'disabled':''} title="Move down">&darr;</button></span></td>`;
+      case 'task': return `<td><input type="text" class="cell-input task-name" data-field="task" value="${escapeHtml(row.task)}" placeholder="Ticket subject"></td>`;
+      case 'priority': return `<td>${buildSelect('priority', row.priority, PRIORITY_OPTIONS)}</td>`;
+      case 'assignee': return `<td><input type="text" class="cell-input assignee-field" data-field="assignee" list="teamList" value="${escapeHtml(row.assignee)}" placeholder="Unassigned"></td>`;
+      case 'stage': return `<td>${stepsHTML(row)}</td>`;
+      case 'delivery': return `<td>${deliveryHTML(row, s)}</td>`;
+      case 'schedule': return `<td>${scheduleHTML(row, s)}</td>`;
+      case 'effort': return `<td><div class="effort-row"><input type="number" min="0" class="cell-input" data-field="effort" value="${escapeHtml(row.effort)}"><span class="unit">d</span></div></td>`;
+      case 'trackerStatus': return `<td>${buildSelect('trackerStatus', row.trackerStatus, TRACKER_STATUS_OPTIONS)}</td>`;
+      case 'highlight': return `<td><span class="rag-dot ${row.highlight ? 'rag-' + row.highlight : ''}" data-rag title="RAG: ${row.highlight || 'not set'} — click to change">${row.highlight ? '' : '–'}</span></td>`;
+      case 'blocker': return `<td class="blocker-field"><textarea class="cell-input ${row.blocker ? 'has-value' : ''}" data-field="blocker" placeholder="—">${escapeHtml(row.blocker)}</textarea></td>`;
+      case 'comment': return `<td class="comment-field"><textarea class="cell-input" data-field="comment" placeholder="Add a comment…">${escapeHtml(row.comment)}</textarea></td>`;
+      case 'custom': return `<td><input type="text" class="cell-input" data-custom-col="${c.col.id}" value="${escapeHtml(row.custom[c.col.id] || '')}"></td>`;
+      case 'actions': {
+        const moves = proj.sprints.filter(x => x.id !== sprint.id).map(x => `<option value="${x.id}">${escapeHtml(x.name)}</option>`).join('');
+        return `<td class="edit-only"><span class="row-actions">
+          <button class="icon-btn" data-action="duplicate" title="Duplicate">${ICON.copy}</button>
+          ${moves ? `<select class="move-select" data-move-select title="Move to another sprint"><option value="">Move to…</option>${moves}</select>` : ''}
+          <button class="icon-btn delete" data-action="delete" title="Delete ticket">${ICON.trash}</button></span></td>`;
+      }
+    }
+  }).join('');
+  return `<tr data-row-id="${row.id}" class="${hidden ? 'row-hidden' : ''}">${tds}</tr>`;
+}
+function sprintHTML(sprint, proj, cols){
+  const sc = sprint.rows.map(rowSchedule);
+  const n = sprint.rows.length;
+  const shipped = sc.filter(s => s.delivered).length;
+  const pct = n ? Math.round(shipped / n * 100) : 0;
+  const minis = ['ontrack','delayed','ahead'].map(k => ({k, c: sc.filter(s => s.state === k).length})).filter(x => x.c);
+  const visible = sprint.rows.filter((r, i) => rowMatchesFilter(r, sc[i])).length;
+  let body;
+  if(!n) body = `<tr class="empty-tasks-row"><td colspan="${cols.length}">No tickets in this sprint yet — click “+ Ticket”.</td></tr>`;
+  else body = sprint.rows.map((r, i) => rowHTML(r, i, sprint, proj, sc[i], cols)).join('') +
+    (visible === 0 ? `<tr class="empty-tasks-row"><td colspan="${cols.length}">No tickets in this sprint match the current filters.</td></tr>` : '');
+  return `<section class="sprint" data-sprint-id="${sprint.id}">
+    <div class="sprint-header">
+      <button class="collapse-toggle ${sprint.collapsed?'collapsed':''}" data-toggle title="Collapse / expand">${ICON.down}</button>
+      <span class="sprint-name" contenteditable="true" spellcheck="false" data-sprint-name>${escapeHtml(sprint.name)}</span>
+      <span class="chip-count">${anyFilter() && n ? `${visible}/${n}` : n} ticket${n===1?'':'s'}</span>
+      <span class="sprint-dates">${dpHTML(sprint.startDate, 'data-dp="sprintStart"')}→${dpHTML(sprint.endDate, 'data-dp="sprintEnd"')}</span>
+      <span class="sprint-health">${minis.map(m => `<span class="mini"><span class="sw" style="background:${SCHEDULE[m.k].color}"></span>${m.c} ${SCHEDULE[m.k].label.toLowerCase()}</span>`).join('')}</span>
+      <span class="sprint-progress" title="${shipped} of ${n} shipped"><span class="track"><span style="width:${pct}%"></span></span>${pct}% shipped</span>
+      <span class="sprint-actions edit-only">
+        <button class="icon-btn" data-add-task title="Add ticket">+ Ticket</button>
+        <button class="icon-btn delete" data-delete-sprint title="Delete sprint">${ICON.trash}</button>
+      </span>
+    </div>
+    ${sprint.collapsed ? '' : `<div class="table-scroll"><table><thead><tr>${headHTML(cols)}</tr></thead><tbody>${body}</tbody></table></div>`}
+  </section>`;
+}
+function renderSprints(){
+  const sx = window.scrollX, sy = window.scrollY;
+  const c = $('#sprintsContainer'), proj = getActiveProject();
+  // keep horizontal scroll position of each table
+  const hs = {}; c.querySelectorAll('.sprint').forEach(s => { const t = s.querySelector('.table-scroll'); if(t) hs[s.dataset.sprintId] = t.scrollLeft; });
+  const names = new Set([...(proj.team || []).map(m => m.name), ...allRowsInActive().map(r => r.assignee)].filter(Boolean));
+  $('#teamList').innerHTML = [...names].sort().map(n => `<option value="${escapeHtml(n)}">`).join('');
+  if(!proj.sprints.length){
+    c.innerHTML = `<div class="empty-state">No sprints yet in “${escapeHtml(proj.name)}”. Click <b>+ Sprint</b> to start.</div>`;
+  } else {
+    const cols = visibleCols();
+    c.innerHTML = proj.sprints.map(s => sprintHTML(s, proj, cols)).join('');
+    c.querySelectorAll('.sprint').forEach(s => { const t = s.querySelector('.table-scroll'); if(t && hs[s.dataset.sprintId]) t.scrollLeft = hs[s.dataset.sprintId]; });
+    c.querySelectorAll('textarea.cell-input').forEach(autoGrow);
+  }
+  window.scrollTo(sx, sy);
+  updateSticky();
+}
+
+/* ---------- frozen navy header: sticks under the nav until the sprint ends ---------- */
+let stickyRaf = 0;
+function updateSticky(){
+  stickyRaf = 0;
+  const nav = $('#subnav');
+  const navB = nav.getBoundingClientRect().bottom;
+  nav.classList.toggle('scrolled', window.scrollY > 120);
+  document.querySelectorAll('#sprintsContainer .sprint').forEach(card => {
+    const head = card.querySelector('.sprint-header'), table = card.querySelector('table');
+    head.classList.toggle('stuck', card.getBoundingClientRect().top < navB - 1);
+    if(!table) return;
+    const thead = table.tHead, tr = table.getBoundingClientRect();
+    const top = navB + head.offsetHeight;
+    const off = Math.max(0, Math.min(top - tr.top, tr.height - thead.offsetHeight));
+    thead.style.transform = off > 0.5 ? `translate3d(0,${off}px,0)` : '';
+    thead.classList.toggle('stuck', off > 0.5);
+  });
+}
+const queueSticky = () => { if(!stickyRaf) stickyRaf = requestAnimationFrame(updateSticky); };
+window.addEventListener('scroll', queueSticky, {passive:true});
+window.addEventListener('resize', queueSticky);
+
+/* ---------- delivery date change → full history + delay classification ---------- */
+function handleDeliveryChange(row, iso){
+  const prev = row.delivery || lastKnownDate(row);
+  row.delivery = iso;
+  if(!iso){ scheduleSave(); refreshTickets(); return; }
+  if(!row.baselineDate && !row.dateChanges.length){
+    row.baselineDate = iso;          // first date ever set = original plan
+    scheduleSave(); refreshTickets(); return;
+  }
+  if(prev && prev !== iso){
+    const ch = { id: uid('chg'), from: prev, to: iso, at: new Date().toISOString(), reason: '', note: '' };
+    row.dateChanges.push(ch);
+    scheduleSave(); refreshTickets();
+    openReasonModal(row, ch);
+  } else { scheduleSave(); refreshTickets(); }
+}
+function openReasonModal(row, ch){
+  const sh = diffDays(ch.from, ch.to);
+  let chosen = '';
+  const o = openModal(`
+    <h3>${sh > 0 ? 'Delivery date pushed out' : 'Delivery date pulled in'}</h3>
+    <p class="m-sub">#${escapeHtml(row.ticketNo)} · ${escapeHtml(row.task || 'Untitled ticket')}</p>
+    <div class="m-shift"><span class="old">${fmtDate(ch.from)}</span><span>→</span><span>${fmtDate(ch.to)}</span><span class="shift ${sh>0?'late':'early'}">${signedDays(sh)}</span></div>
+    <div class="m-label">${sh > 0 ? 'Why was it delayed?' : 'Reason (optional)'}</div>
+    <div class="chips">${REASONS.map(r => `<button class="chip" data-r="${r.v}" style="--rc:${r.color}"><span class="sw"></span>${r.label}</button>`).join('')}</div>
+    <textarea id="reasonNote" placeholder="Add context (optional) — e.g. waiting for CMC approval"></textarea>
+    <div class="modal-actions">
+      <button class="btn left" id="mCorrection" title="Use this if you just fixed a typo — it won't be logged as a change">Just a correction</button>
+      <button class="btn" id="mLater">Classify later</button>
+      <button class="btn primary" id="mSave">Save</button>
+    </div>`);
+  o.querySelectorAll('.chip').forEach(b => b.onclick = () => {
+    chosen = chosen === b.dataset.r ? '' : b.dataset.r;
+    o.querySelectorAll('.chip').forEach(x => x.classList.toggle('sel', x.dataset.r === chosen));
+  });
+  o.querySelector('#mSave').onclick = () => {
+    ch.reason = chosen; ch.note = o.querySelector('#reasonNote').value.trim();
+    closeModal(); scheduleSave(); refreshTickets(); flashRow(row.id);
+    toast(chosen ? `Logged: ${reasonInfo(chosen).label}` : 'Date change logged');
+  };
+  o.querySelector('#mLater').onclick = () => { closeModal(); if(sh > 0) toast('Date change logged — reason marked unclassified'); };
+  o.querySelector('#mCorrection').onclick = () => {
+    const i = row.dateChanges.indexOf(ch);
+    if(i > -1) row.dateChanges.splice(i, 1);
+    const prevCh = row.dateChanges[row.dateChanges.length - 1];
+    if(prevCh) prevCh.to = ch.to; else row.baselineDate = ch.to;
+    closeModal(); scheduleSave(); refreshTickets(); toast('Date corrected — not logged as a change');
+  };
+}
+function flashRow(id){ const tr = document.querySelector(`tr[data-row-id="${id}"]`); if(tr){ tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash'); } }
+
+/* ---------- delegated events for the sprint tables ---------- */
+const sc$ = $('#sprintsContainer');
+function ctx(el){
+  const tr = el.closest('tr[data-row-id]'), sec = el.closest('.sprint');
+  const sprint = sec ? findSprintInActive(sec.dataset.sprintId) : null;
+  const row = tr && sprint ? sprint.rows.find(r => r.id === tr.dataset.rowId) : null;
+  return { sprint, row, tr };
+}
+sc$.addEventListener('click', e => {
+  const t = e.target;
+  const { sprint, row } = ctx(t);
+  if(!sprint) return;
+  if(t.closest('[data-toggle]')){ sprint.collapsed = !sprint.collapsed; scheduleSave(); renderSprints(); return; }
+  if(t.closest('[data-add-task]')){
+    const r = newRow(data.nextTicketNo++); sprint.rows.push(r); sprint.collapsed = false;
+    scheduleSave(); refreshTickets();
+    const inp = document.querySelector(`tr[data-row-id="${r.id}"] .task-name`); if(inp) inp.focus();
+    return;
+  }
+  if(t.closest('[data-delete-sprint]')){
+    const proj = getActiveProject(), i = proj.sprints.indexOf(sprint);
+    if(sprint.rows.length && !confirm(`Delete sprint "${sprint.name}" and its ${plural(sprint.rows.length,'ticket')}?`)) return;
+    proj.sprints.splice(i, 1); scheduleSave(); refreshTickets();
+    toast(`Sprint “${sprint.name}” deleted`, 'Undo', () => { getActiveProject().sprints.splice(i, 0, sprint); scheduleSave(); refreshTickets(); }, 7000);
+    return;
+  }
+  if(!row) return;
+  const act = t.closest('[data-action]');
+  if(act){
+    const a = act.dataset.action, idx = sprint.rows.indexOf(row);
+    if(a === 'up' && idx > 0) [sprint.rows[idx-1], sprint.rows[idx]] = [sprint.rows[idx], sprint.rows[idx-1]];
+    else if(a === 'down' && idx < sprint.rows.length - 1) [sprint.rows[idx+1], sprint.rows[idx]] = [sprint.rows[idx], sprint.rows[idx+1]];
+    else if(a === 'duplicate'){
+      const clone = JSON.parse(JSON.stringify(row));
+      clone.id = uid('row'); clone.ticketNo = data.nextTicketNo++;
+      clone.stageHistory = [{ stage: clone.stage, at: new Date().toISOString() }];
+      clone.dateChanges.forEach(c => c.id = uid('chg'));
+      sprint.rows.splice(idx + 1, 0, clone);
+      toast(`Duplicated as #${clone.ticketNo}`);
+    } else if(a === 'delete'){
+      sprint.rows.splice(idx, 1);
+      const sid = sprint.id;
+      toast(`Ticket #${row.ticketNo} deleted`, 'Undo', () => { const s = findSprintInActive(sid); if(s){ s.rows.splice(idx, 0, row); scheduleSave(); refreshTickets(); } }, 7000);
+    }
+    scheduleSave(); refreshTickets(); return;
+  }
+  const ps = t.closest('[data-pstep]');
+  if(ps){ trackDelivery(row, () => setRowStage(row, ps.dataset.pstep)); scheduleSave(); refreshTickets(); return; }
+  if(t.closest('[data-rag]')){ row.highlight = RAG_CYCLE[(RAG_CYCLE.indexOf(row.highlight) + 1) % RAG_CYCLE.length]; scheduleSave(); refreshTickets(); return; }
+  if(t.closest('[data-hist]')){ expandedHistory.has(row.id) ? expandedHistory.delete(row.id) : expandedHistory.add(row.id); renderSprints(); renderFilterBar(); return; }
+  const del = t.closest('[data-change-del]');
+  if(del){
+    const i = row.dateChanges.findIndex(c => c.id === del.dataset.changeDel);
+    if(i > -1){
+      const [removed] = row.dateChanges.splice(i, 1);
+      scheduleSave(); refreshTickets();
+      toast('History entry removed', 'Undo', () => { row.dateChanges.splice(i, 0, removed); scheduleSave(); refreshTickets(); });
+    }
+  }
+});
+sc$.addEventListener('change', e => {
+  const t = e.target;
+  if(t.classList.contains('dp-native')) return;
+  const { sprint, row } = ctx(t);
+  if(!sprint || !row) return;
+  if(t.matches('select[data-field]')){
+    const f = t.dataset.field;
+    trackDelivery(row, () => { row[f] = t.value; });
+  } else if(t.matches('[data-sched-override]')){ row.scheduleOverride = t.value; }
+  else if(t.matches('[data-delay-reason]')){ row.delayReason = t.value; }
+  else if(t.matches('[data-change-reason]')){ const c = row.dateChanges.find(c => c.id === t.dataset.changeReason); if(c) c.reason = t.value; }
+  else if(t.matches('[data-move-select]')){
+    const target = findSprintInActive(t.value); if(!target) return;
+    sprint.rows.splice(sprint.rows.indexOf(row), 1); target.rows.push(row);
+    toast(`Moved to ${target.name}`);
+  } else return;
+  scheduleSave(); refreshTickets();
+});
+sc$.addEventListener('input', e => {
+  const t = e.target;
+  if(t.classList.contains('dp-text')) return;
+  if(t.tagName === 'TEXTAREA') autoGrow(t);
+  const { row } = ctx(t);
+  if(!row) return;
+  if(t.matches('input[data-field], textarea[data-field]')){
+    const f = t.dataset.field;
+    row[f] = f === 'ticketNo' ? (t.value.trim() && !isNaN(t.value) ? Number(t.value) : t.value) : t.value;
+    if(f === 'blocker') t.classList.toggle('has-value', !!t.value);
+    scheduleSave();
+  } else if(t.matches('[data-custom-col]')){ row.custom[t.dataset.customCol] = t.value; scheduleSave(); }
+  else if(t.matches('[data-change-note]')){ const c = row.dateChanges.find(c => c.id === t.dataset.changeNote); if(c){ c.note = t.value; scheduleSave(); } }
+});
+sc$.addEventListener('focusout', e => {
+  const t = e.target;
+  if(t.matches('[data-sprint-name]')){
+    const { sprint } = ctx(t);
+    if(sprint){ const v = t.textContent.trim() || 'Untitled sprint'; if(v !== sprint.name){ sprint.name = v; scheduleSave(); } }
+  } else if(t.matches('[data-label]')){
+    const k = t.dataset.label, v = t.textContent.trim();
+    if(v && v !== data.labels[k]){ data.labels[k] = v; scheduleSave(); renderSprints(); }
+  } else if(t.matches('[data-custom-label]')){
+    const col = data.customColumns.find(c => c.id === t.dataset.customLabel), v = t.textContent.trim();
+    if(col && v && v !== col.label){ col.label = v; scheduleSave(); renderSprints(); }
+  } else if(t.matches('[data-field="assignee"], [data-field="blocker"]')){
+    renderStats(); renderFilterBar();
+  }
+});
+sc$.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && e.target.matches('[contenteditable]')){ e.preventDefault(); e.target.blur(); }
+});
+sc$.addEventListener('mousedown', e => {
+  const rc = e.target.closest('[data-remove-col]');
+  if(!rc) return;
+  const id = rc.dataset.removeCol;
+  if(confirm('Remove this column? Its values are deleted for every ticket in every project.')){
+    data.customColumns = data.customColumns.filter(c => c.id !== id);
+    data.projects.forEach(p => p.sprints.forEach(s => s.rows.forEach(r => { delete r.custom[id]; })));
+    scheduleSave(); renderSprints();
+  }
+});
+sc$.addEventListener('dpcommit', e => {
+  const w = e.target, iso = e.detail.iso, { sprint, row } = ctx(w);
+  if(!sprint) return;
+  if(w.dataset.dp === 'delivery' && row) handleDeliveryChange(row, iso);
+  else if(w.dataset.dp === 'sprintStart'){ sprint.startDate = iso; scheduleSave(); }
+  else if(w.dataset.dp === 'sprintEnd'){ sprint.endDate = iso; scheduleSave(); }
+});
+
+/* ============================================================
+   GANTT VIEW (unchanged logic, dates now dd/mm/yyyy)
+   ============================================================ */
+const GANTT_STAGES = [
+  {v:'BR',label:'BR',color:'#419cd0'},
+  {v:'DSN',label:'UI / UX',color:'#55b46b'},
+  {v:'DEV',label:'DEV',color:'#e8ac28'},
+  {v:'UAT',label:'UAT',color:'#de665e'},
+  {v:'PROD',label:'PROD',color:'#9964bd'}
+];
+function ganttDefaultPlan(){ return {startDate:todayISO(),stages:GANTT_STAGES.map(s=>({stage:s.v,days:0,blocker:'',gapDays:0}))}; }
+function countWorkingDays(start, end){
+  let n = 0;
+  for(let d=+start; d<+end; d+=86400000){ const dow = new Date(d).getUTCDay(); if(dow !== 5 && dow !== 6) n++; }
+  return n;
+}
+function ganttPlanSegments(plan){
+  if(!plan.startDate) return [];
+  let cursor = new Date(plan.startDate+'T00:00:00Z');
+  const segs = [];
+  plan.stages.forEach(s=>{
+    const days=Number(s.days)||0, gapDays=Number(s.gapDays)||0, blocker=(s.blocker||'').trim();
+    if(days>0){ const start=new Date(cursor); cursor=new Date(+cursor+days*86400000); segs.push({type:'work',stage:s.stage,days,workingDays:countWorkingDays(start,cursor),start,end:new Date(cursor),blocker}); }
+    if(gapDays>0){ const start=new Date(cursor); cursor=new Date(+cursor+gapDays*86400000); segs.push({type:'gap',stage:s.stage,days:gapDays,start,end:new Date(cursor),blocker}); }
+  });
+  return segs;
+}
+function ganttWeekendBg(start,count,dayPx){
+  const stops=[];
+  for(let i=0;i<count;i++){ const dow=new Date(+start+i*86400000).getUTCDay(); const c=(dow===5||dow===6)?'rgba(96,116,133,0.14)':'transparent'; stops.push(`${c} ${i*dayPx}px`,`${c} ${(i+1)*dayPx}px`); }
+  return `linear-gradient(to right, ${stops.join(',')})`;
+}
+function ganttAddRevision(board, row){
+  const rootId = row.revisionOf || row.id;
+  const rev = { id: uid('gf'), task: row.task, revisionOf: rootId, revisionNote: '', gantt: ganttDefaultPlan() };
+  rev.gantt.startDate = '';
+  const idx = board.features.indexOf(row);
+  let insertAt = idx;
+  for(let i=idx+1;i<board.features.length;i++){ const f=board.features[i]; if(f.id===rootId || f.revisionOf===rootId) insertAt=i; else break; }
+  board.features.splice(insertAt+1,0,rev);
+  return rev;
+}
+function renderGanttView(){
+  const container=$('#ganttContainer'), proj=getActiveProject();
+  if(!proj.ganttBoard) proj.ganttBoard={start:'2026-09-15',end:'2026-12-31',features:[]};
+  const board=proj.ganttBoard, rows=board.features;
+  const start=new Date(board.start+'T00:00:00Z'), end=new Date(board.end+'T00:00:00Z');
+  const count=Math.round((end-start)/86400000)+1;
+  const dayPx=24, width=count*dayPx;
+  const trackBg=`${ganttWeekendBg(start,count,dayPx)}, repeating-linear-gradient(to right,transparent 0,transparent 23px,#dde7ee 23px,#dde7ee 24px)`;
+  const dmy=d=>fmtDate(d.toISOString().slice(0,10));
+  const months=[],days=[];
+  for(let i=0;i<count;){ const d=new Date(+start+i*86400000); const next=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1)); const n=Math.min(count-i,Math.round((next-d)/86400000)); months.push({label:d.toLocaleDateString('en-GB',{month:'long',year:'numeric',timeZone:'UTC'}),days:n}); i+=n; }
+  for(let i=0;i<count;i++){ const d=new Date(+start+i*86400000), dow=d.getUTCDay(); days.push({num:d.getUTCDate(),dow:d.toLocaleDateString('en-GB',{weekday:'short',timeZone:'UTC'}).slice(0,1),isWeekend:(dow===5||dow===6)}); }
+  const editing=rows.find(r=>r.id===ganttEditingRowId);
+  container.innerHTML=`
+  <style>
+    #ganttContainer .gantt-month-cell{background:var(--navy);color:#fff;font-size:12px;padding:9px 0}
+    #ganttContainer .gantt-week-cell{background:#E8EEF6;color:#334155;border-bottom:1px solid #CBD5E1;border-left:1px solid #DDE5EE;font-size:10.5px;font-weight:700;}
+    #ganttContainer .gantt-week-cell small{display:block;font-size:8px;font-weight:600;color:#64748B;}
+    #ganttContainer .gantt-week-cell.weekend{background:#D5DEE8;}
+    #ganttContainer .gantt-corner{background:#E8EEF6;color:#1E293B;}
+    #ganttContainer .gantt-feature-row{min-height:72px;border-bottom:1px solid #E2E8F0}
+    #ganttContainer .gantt-feature-label{background:#F8FAFC;border-left:5px solid #63a8ca;flex-wrap:wrap;row-gap:2px;}
+    #ganttContainer .gantt-feature-label.is-revision{border-left-style:dashed;border-left-color:#8d64a5;background:#faf7fc;}
+    #ganttContainer .gantt-seg{top:19px;height:27px;border:1px solid #0002;border-radius:7px;color:#132b3b;font-size:10px;cursor:pointer}
+    #ganttContainer .gantt-seg.blocked{border:2px dashed #b91c1c;}
+    #ganttContainer .gantt-seg.gap{background:repeating-linear-gradient(45deg,rgba(96,116,133,.16) 0,rgba(96,116,133,.16) 5px,transparent 5px,transparent 10px)!important;border:1.5px dashed #78899590;color:#4b5a66;box-shadow:none;}
+    #ganttContainer .gantt-callout{position:absolute;top:49px;height:16px;display:flex;align-items:center;background:#b91c1c;color:#fff;font-size:9px;font-weight:700;border-radius:4px;padding:0 6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;}
+    #ganttContainer .gantt-milestone{top:27px;background:#8d64a5}
+    #ganttContainer .gantt-add-rev-btn{flex-shrink:0;width:20px;height:20px;border:none;background:transparent;border-radius:6px;color:#5b7889;cursor:pointer;font-size:12px;}
+    #ganttContainer .gantt-add-rev-btn:hover{background:#dcebf2;}
+    #ganttContainer .gantt-rev-badge{display:inline-flex;font-size:8.5px;font-weight:800;color:#8d64a5;background:#f1e8f8;border:1px solid #d9c3ee;border-radius:20px;padding:1px 6px;text-transform:uppercase;width:100%;}
+    #ganttContainer .gantt-edit-field input:not([type=number]):not(.dp-text):not(.dp-native){padding:8px;border:1px solid var(--line);border-radius:7px;max-width:220px}
+    #ganttContainer .gantt-feature-name{white-space:normal}
+    #ganttContainer .gantt-outer{max-height:640px}
+  </style>
+  <div class="view-header"><div><h2>Feature delivery plan</h2><p class="view-sub">Enter each stage's length in calendar days (0 skips it). Bars show working days — Friday &amp; Saturday are excluded and greyed out. Add gap / hold days for holidays or approval waits.</p></div><button class="btn primary edit-only" id="ganttAddFeatureBtn">+ Add feature</button></div>
+  <div class="gantt-card">
+    <div class="gantt-title-block"><p class="gantt-eyebrow">${escapeHtml(proj.name)} · PRODUCT DELIVERY ROADMAP</p><h2>Project Gantt Chart</h2></div>
+    <div class="gantt-toolbar">
+      <div class="gantt-range">From ${dpHTML(board.start,'data-dp="ganttStart" data-required','boxed')} To ${dpHTML(board.end,'data-dp="ganttEnd" data-required','boxed')}</div>
+      <div class="gantt-legend">${GANTT_STAGES.map(s=>`<span class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:${s.color}"></span>${s.label}</span>`).join('')}<span class="gantt-legend-item">◆ Delivery</span><span class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:rgba(96,116,133,.35)"></span>Weekend</span><span class="gantt-legend-item"><span class="gantt-legend-swatch" style="background:repeating-linear-gradient(45deg,#788995 0,#788995 2px,transparent 2px,transparent 4px)"></span>Gap / hold</span></div>
+    </div>
+    ${editing?`<div class="gantt-edit-panel"><h4>Edit feature &amp; stage durations</h4><div class="gantt-edit-fields">
+      <div class="gantt-edit-field"><label for="ganttNameInput">Feature name</label><input id="ganttNameInput" value="${escapeHtml(editing.task)}"></div>
+      <div class="gantt-edit-field"><label>Feature start</label>${dpHTML(editing.gantt.startDate,'data-dp="ganttFeatStart"','boxed')}</div>
+      ${editing.revisionOf?`<div class="gantt-edit-field"><label for="ganttRevNoteInput">Reason for new requirements</label><input id="ganttRevNoteInput" placeholder="e.g. Scope changed — client added KYC step" value="${escapeHtml(editing.revisionNote||'')}"></div>`:''}
+      ${GANTT_STAGES.map(s=>{ const st=editing.gantt.stages.find(x=>x.stage===s.v); return `<div class="gantt-edit-field gantt-stage-field" style="border-color:${s.color}">
+          <label>${s.label} · days</label><input type="number" min="0" max="3650" step="1" data-gantt-stage-input="${s.v}" value="${st.days}">
+          <label style="margin-top:2px">Gap / hold after</label><input type="number" min="0" max="3650" step="1" data-gantt-stage-gap="${s.v}" value="${st.gapDays||0}">
+          <input placeholder="Reason e.g. waiting for approval" data-gantt-stage-blocker="${s.v}" value="${escapeHtml(st.blocker||'')}" style="font-size:11px;width:170px">
+        </div>`; }).join('')}
+      <button class="btn" id="ganttClosePanelBtn">Done</button>
+      <button class="btn" id="ganttAddRevBtn">↻ New requirements line</button>
+      <button class="btn" id="ganttDeleteBtn">Remove ${editing.revisionOf?'this line':'feature'}</button>
+    </div></div>`:''}
+    <div class="gantt-outer"><div class="gantt-table" style="width:${width+240}px">
+      <div class="gantt-header-block">
+        <div class="gantt-header-row"><div class="gantt-corner">Features / tasks</div>${months.map(m=>`<div class="gantt-month-cell" style="width:${m.days*dayPx}px">${m.label}</div>`).join('')}</div>
+        <div class="gantt-header-row"><div class="gantt-corner">Days →</div>${days.map(d=>`<div class="gantt-week-cell${d.isWeekend?' weekend':''}" style="width:${dayPx}px">${d.num}<small>${d.dow}</small></div>`).join('')}</div>
+      </div>
+      ${rows.map(row=>{
+        const segs=ganttPlanSegments(row.gantt);
+        const bars=segs.map(seg=>{
+          const left=Math.max(0,(seg.start-start)/86400000),right=Math.min(count,(seg.end-start)/86400000);
+          if(right<=left) return '';
+          const s=GANTT_STAGES.find(s=>s.v===seg.stage);
+          const barLeft=left*dayPx, barWidth=Math.max(1,(right-left)*dayPx-2);
+          const range=`${dmy(seg.start)} to ${dmy(new Date(+seg.end-86400000))}`;
+          if(seg.type==='gap'){ const gl=seg.blocker||`Gap ${seg.days}d`; return `<button class="gantt-seg gap" data-gantt-edit="${row.id}" style="left:${barLeft}px;width:${barWidth}px" title="${escapeHtml(`${s.label} — paused: ${gl} · ${seg.days} day(s) · ${range}`)}">⏸ ${escapeHtml(gl)}</button>`; }
+          const blocked=!!seg.blocker;
+          const label=(blocked?'🚩 ':'')+s.label+' '+seg.workingDays+'d';
+          const tt=`${s.label}: ${seg.workingDays} working day(s) (${seg.days} calendar) · ${range}`+(blocked?` · ⚠ ${seg.blocker}`:'');
+          return `<button class="gantt-seg${blocked?' blocked':''}" data-gantt-edit="${row.id}" style="left:${barLeft}px;width:${barWidth}px;background:${s.color}" title="${escapeHtml(tt)}">${escapeHtml(label)}</button>`+
+            (blocked?`<span class="gantt-callout" data-gantt-edit="${row.id}" style="left:${barLeft}px;max-width:${Math.max(barWidth,60)}px" title="${escapeHtml(seg.blocker)}">🚩 ${escapeHtml(seg.blocker)}</span>`:'');
+        }).join('');
+        const finish=segs.length?(segs[segs.length-1].end-start)/86400000:null;
+        const milestone=finish!==null&&finish>=0&&finish<=count?`<span class="gantt-milestone" style="left:${Math.min(width-6,finish*dayPx)}px" title="Delivery: ${dmy(new Date(+segs[segs.length-1].end-86400000))}"></span>`:'';
+        const revBadge=row.revisionOf?`<span class="gantt-rev-badge" title="New requirements received${row.revisionNote?': '+escapeHtml(row.revisionNote):''}">↻ New requirements${row.revisionNote?' — '+escapeHtml(row.revisionNote):''}</span>`:'';
+        return `<div class="gantt-feature-row"><div class="gantt-feature-label${row.revisionOf?' is-revision':''}">${revBadge}<span class="gantt-feature-name">${escapeHtml(row.task)}</span><button class="gantt-add-rev-btn edit-only" data-gantt-addrev="${row.id}" title="New requirements received — add a new line">↻</button><button class="gantt-edit-btn edit-only" data-gantt-edit="${row.id}" title="Edit">✎</button></div><div class="gantt-feature-track" style="width:${width}px;background-image:${trackBg}">${bars||'<span class="gantt-unscheduled">'+(segs.length?'Outside displayed date range — edit dates':'Click ✎ to enter stage durations')+'</span>'}${milestone}</div></div>`;
+      }).join('')}
+    </div></div>
+    ${rows.length?'':'<div class="gantt-empty"><strong>Your plan starts here.</strong><p>Add a feature, then enter its start date and stage durations.</p><p>Example: eKYC · BR 5 days · UI / UX 10 days</p></div>'}
+  </div>`;
+  const save=()=>{scheduleSave();renderGanttView();};
+  container.querySelector('#ganttAddFeatureBtn').onclick=()=>{ const row={id:uid('gf'),task:'New feature',gantt:ganttDefaultPlan()}; rows.push(row); ganttEditingRowId=row.id; save(); container.querySelector('#ganttNameInput').focus(); };
+  container.querySelectorAll('[data-gantt-edit]').forEach(b=>b.onclick=()=>{ if(document.body.classList.contains('present')) return; ganttEditingRowId=b.dataset.ganttEdit; renderGanttView(); });
+  container.querySelectorAll('[data-gantt-addrev]').forEach(b=>b.onclick=()=>{ const src=rows.find(r=>r.id===b.dataset.ganttAddrev); if(!src) return; ganttEditingRowId=ganttAddRevision(board,src).id; save(); });
+  if(editing){
+    container.querySelector('#ganttNameInput').onchange=e=>{editing.task=e.target.value.trim()||'Untitled feature';save();};
+    const rn=container.querySelector('#ganttRevNoteInput'); if(rn) rn.onchange=e=>{editing.revisionNote=e.target.value.trim();save();};
+    container.querySelectorAll('[data-gantt-stage-input]').forEach(i=>i.onchange=()=>{ if(!i.checkValidity()){i.reportValidity();return;} editing.gantt.stages.find(s=>s.stage===i.dataset.ganttStageInput).days=Number(i.value)||0; save(); });
+    container.querySelectorAll('[data-gantt-stage-gap]').forEach(i=>i.onchange=()=>{ if(!i.checkValidity()){i.reportValidity();return;} editing.gantt.stages.find(s=>s.stage===i.dataset.ganttStageGap).gapDays=Number(i.value)||0; save(); });
+    container.querySelectorAll('[data-gantt-stage-blocker]').forEach(i=>i.onchange=()=>{ editing.gantt.stages.find(s=>s.stage===i.dataset.ganttStageBlocker).blocker=i.value.trim(); save(); });
+    container.querySelector('#ganttClosePanelBtn').onclick=()=>{ganttEditingRowId=null;renderGanttView();};
+    container.querySelector('#ganttAddRevBtn').onclick=()=>{ ganttEditingRowId=ganttAddRevision(board,editing).id; save(); };
+    container.querySelector('#ganttDeleteBtn').onclick=()=>{ if(confirm('Remove this line from the Gantt plan?')){ rows.splice(rows.indexOf(editing),1); ganttEditingRowId=null; save(); } };
+  }
+}
+$('#ganttContainer').addEventListener('dpcommit', e => {
+  const k = e.target.dataset.dp, iso = e.detail.iso, board = getActiveProject().ganttBoard;
+  if(k === 'ganttStart' || k === 'ganttEnd'){
+    const a = k === 'ganttStart' ? iso : board.start, b = k === 'ganttEnd' ? iso : board.end;
+    if(!a || !b || a > b || diffDays(a, b) > 730){ toast('Choose a valid range of up to 2 years'); renderGanttView(); return; }
+    board.start = a; board.end = b;
+  } else if(k === 'ganttFeatStart'){
+    const ed = board.features.find(r => r.id === ganttEditingRowId); if(ed) ed.gantt.startDate = iso;
+  }
+  scheduleSave(); renderGanttView();
+});
+
+/* ============================================================
+   TOP-LEVEL ACTIONS
+   ============================================================ */
+$('#addSprintBtn').onclick = () => {
+  const proj = getActiveProject();
+  proj.sprints.push(newSprint(`Sprint ${proj.sprints.length + 1}`));
+  scheduleSave(); refreshTickets();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+};
+$('#addTicketBtn').onclick = () => {
+  if(activeView !== 'tickets'){ activeView = 'tickets'; renderViewbar(); }
+  const proj = getActiveProject();
+  if(!proj.sprints.length) proj.sprints.push(newSprint('Sprint 1'));
+  const sprint = proj.sprints[proj.sprints.length - 1];
+  sprint.collapsed = false;
+  const r = newRow(data.nextTicketNo++); sprint.rows.push(r);
+  filters = emptyFilters();
+  scheduleSave(); renderActiveView();
+  const inp = document.querySelector(`tr[data-row-id="${r.id}"] .task-name`);
+  if(inp){ inp.scrollIntoView({block:'center', behavior:'smooth'}); inp.focus({preventScroll:true}); }
+};
+function setPresent(on){
+  document.body.classList.toggle('present', on);
+  $('#presentBtn').classList.toggle('on', on);
+  $('#presentLabel').textContent = on ? 'Exit presentation' : 'Present';
+  const u = new URL(location.href);
+  if(on) u.searchParams.set('view', 'exec'); else u.searchParams.delete('view');
+  history.replaceState(null, '', u);
+}
+$('#presentBtn').onclick = () => setPresent(!document.body.classList.contains('present'));
+
+$('#moreBtn').onclick = e => {
+  const present = document.body.classList.contains('present');
+  const m = openMenu(e.currentTarget, `
+    ${present ? '' : `<button data-m="addcol">＋ Add custom column</button><button data-m="cols">☰ Show / hide columns</button><hr>`}
+    <button data-m="link">🔗 Copy presentation link</button>
+    <button data-m="print">🖨 Print / save as PDF</button><hr>
+    <button data-m="export">⬆ Export data (backup)</button>
+    ${present ? '' : `<button data-m="import">⬇ Import data</button>`}`);
+  m.querySelectorAll('[data-m]').forEach(b => b.onclick = () => {
+    const k = b.dataset.m; closeMenus();
+    if(k === 'addcol'){
+      const label = prompt('New column name (e.g. Owner, Module):');
+      if(label && label.trim()){
+        const col = { id: uid('col'), label: label.trim() };
+        data.customColumns.push(col);
+        data.projects.forEach(p => p.sprints.forEach(s => s.rows.forEach(r => { r.custom[col.id] = ''; })));
+        scheduleSave(); renderSprints();
+      }
+    } else if(k === 'cols') openColumnsMenu();
+    else if(k === 'link'){
+      const u = new URL(location.href); u.searchParams.set('view', 'exec');
+      navigator.clipboard.writeText(u.toString()).then(() => toast('Presentation link copied — opens in read-only view'), () => prompt('Copy this link:', u.toString()));
+    }
+    else if(k === 'print') window.print();
+    else if(k === 'export') showExportModal();
+    else if(k === 'import') showImportModal();
+  });
+};
+function openColumnsMenu(){
+  const vis = data.columnVisibility;
+  const items = [['assignee','Assignee'],['schedule','Schedule status'],['effort','Effort'],['highlight','RAG'],['blocker','Blocker'],['comment','Comment']];
+  const m = openMenu($('#moreBtn'), `<div class="cp-title">Show columns</div>` + items.map(([k,l]) => `<label><input type="checkbox" data-col-vis="${k}" ${vis[k]?'checked':''}> ${l}</label>`).join(''));
+  m.querySelectorAll('[data-col-vis]').forEach(cb => cb.onchange = () => { data.columnVisibility[cb.dataset.colVis] = cb.checked; scheduleSave(); renderSprints(); });
+}
+function showExportModal(){
+  const text = JSON.stringify(data, null, 2);
+  const o = openModal(`<h3>Export data</h3><p class="m-sub">Your full dashboard data. Keep a copy somewhere safe as a backup.</p><textarea class="code" readonly spellcheck="false"></textarea>
+    <div class="modal-actions"><button class="btn" id="mDl">Download .json</button><button class="btn" id="mCancel">Close</button><button class="btn primary" id="mCopy">Copy to clipboard</button></div>`);
+  const ta = o.querySelector('textarea'); ta.value = text;
+  o.querySelector('#mCancel').onclick = closeModal;
+  o.querySelector('#mCopy').onclick = async e => { try{ await navigator.clipboard.writeText(text); }catch(_){ ta.select(); document.execCommand('copy'); } e.target.textContent = 'Copied!'; };
+  o.querySelector('#mDl').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type:'application/json'})); a.download = `roadmap-backup-${todayISO()}.json`; a.click(); };
+}
+function showImportModal(){
+  const o = openModal(`<h3>Import data</h3><p class="m-sub">Paste previously exported data. This replaces everything for everyone viewing this dashboard.</p><textarea class="code" spellcheck="false"></textarea>
+    <div class="modal-actions"><button class="btn" id="mCancel">Cancel</button><button class="btn primary" id="mImport">Import</button></div>`);
+  o.querySelector('#mCancel').onclick = closeModal;
+  o.querySelector('#mImport').onclick = () => {
+    let parsed;
+    try{ parsed = JSON.parse(o.querySelector('textarea').value); }catch(e){ alert("That isn't valid exported data (couldn't read it as JSON)."); return; }
+    if(!parsed || !Array.isArray(parsed.projects) || !parsed.projects.length){ alert("That isn't valid exported data (no projects found)."); return; }
+    if(!confirm('Replace all current data for everyone viewing this dashboard?')) return;
+    data = migrateData(parsed); closeModal(); render(); scheduleSave();
+  };
+}
+
+/* ---------------- start ---------------- */
+if(new URLSearchParams(location.search).get('view') === 'exec') setPresent(true);
+render();          // draw the empty shell immediately, then load shared data
+loadData();
+</script>
+</body>
+</html>
